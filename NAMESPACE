@@ -1,0 +1,3 @@
+exportPattern("^[[:alpha:]]+")
+useDynLib(PDFEstimator, .registration = TRUE, .fixes = "C_")
+export(estimatePDF)
