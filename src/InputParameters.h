@@ -25,17 +25,15 @@ using namespace std;
 
 class InputParameters {
  
-public:
-    
-    bool    debug;
-    string  debugOpt;
-    
+public:     
    
     string inputPath;
     string inputFile;
     string outputFile;
+    string outputPath;
     bool    writeFile;
     bool    writeHeader;
+    bool    writeFailed;
     string  writeOpt;
     string  headerOpt;
     bool    writeQQ;
@@ -43,7 +41,6 @@ public:
     string  qqFile;
     string  sqrFile;
     
-    string  scoreFile;
     bool    boundaryPenalty;
     string  penaltyOpt;
     
@@ -59,6 +56,7 @@ public:
     int     startSolutionNumber;
     int     integrationPoints;
     int     numberSolutions;
+    int     numberTrials;
     int     maxLagrange;
     int     minLagrange;
     int     nLagrangeAdd;
@@ -83,6 +81,8 @@ public:
     
 private:
     void printUsage();
+    
+    OutputControl out;
 };
 
 #endif	/* INPUTPARAMETERS_HPP */

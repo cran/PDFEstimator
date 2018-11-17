@@ -20,21 +20,34 @@
 
 InputData::InputData(const InputParameters& input) {
     this->input = input;
+        
+    N = 0;
+    nPoints = 0;
+    minimumRaw = 0;
+    maximumRaw = 0;
+    minimumCalc = 0;
+    maximumCalc = 0;
+    nPointsAdjust = 0;
     
     nRightOutliers = 0;
-    nLeftOutliers = 0;
-    
+    nLeftOutliers = 0;    
     leftOutliers = false;
     rightOutliers = false;
+    
     useLast = false;
     y2 = 0;    
+    seed = 12345678;
 }
 
 InputData::InputData(const InputData& orig) {
 }
 
-InputData::~InputData() {
-   
+InputData::~InputData() {    
+    delete [] doubleInverse;
+    delete [] transformedZeroOne;
+    delete [] inverse;
+    delete [] dz;
+    delete [] xUntransform;    
 }
 
 bool InputData::readData() {
@@ -44,9 +57,7 @@ bool InputData::readData() {
     fin.open((input.inputPath + input.inputFile).c_str());
 
     if(!fin.is_open()){
-#ifndef R
-        cout << "Failed to open data file " <<  input.inputFile.c_str() << "\n";
-#endif
+        out.print("Failed to open data file " + input.inputFile);
         return false;
     }
 	
@@ -55,9 +66,7 @@ bool InputData::readData() {
         rawData.push_back(test);
     }
     if (rawData.size() == 0) {
-#ifndef R
-        cout << "No data in " <<  input.inputFile.c_str() << "\n";
-#endif
+        out.print("No data in " + input.inputFile);
         return false;        
     }
    
@@ -74,7 +83,7 @@ void InputData::setData(vector<double> data) {
 void InputData::processData() {   
     nPoints = input.integrationPoints;
     if (nPoints == -1) {
-        nPoints = floor(200 + rawData.size()/200.0);
+        nPoints = (int) (200 + rawData.size()/200.0);
         if (nPoints > 1500) nPoints = 1500;
     }
     
@@ -91,7 +100,7 @@ void InputData::processData() {
 void InputData::fuzzData() {
     int growthFactor = 1;
     int countFuzz = 0;
-    int flagFuzz = 1;  //jacobs - 15??                
+    int flagFuzz = 1;  // increase for more fuzzing                
     double ratio_0 = 1.0e-10;
     int nScramble = 0;       
     int binNs = 101;
@@ -102,13 +111,12 @@ void InputData::fuzzData() {
         vector <double> dx;
         int k1;
         int k2;
-        if (N == 2*floor(N/2)) {
+        if (N == 2 * ((int) (N/2))) {
             k1 = N/2;
             k2 = k1 + 1;
         } else {
             k1 = (N-1)/2;
             k2 = k1 + 2;
-            int kmid = k1 + 1;
             dx.push_back((rawData[k2] - rawData[k1]) / 2);
         }
         
@@ -120,8 +128,6 @@ void InputData::fuzzData() {
             dx.push_back(rawData[k] - rawData[k-1]);
         }
        
-        double t1 = *min_element(dx.begin(), dx.end());
-        double t2 = *max_element(dx.begin(), dx.end());
         double ratio = *min_element(dx.begin(), dx.end()) / (*max_element(dx.begin(), dx.end()) + 1.0e-40);  
         if (ratio > ratio_0/N) {                    
             break;                  
@@ -129,7 +135,7 @@ void InputData::fuzzData() {
             double dxMin;
             ratio_0 = ratio_0/2;
             countFuzz = countFuzz + 1;
-            double minNdx = round(0.75 * binNs) - 1; 
+            double minNdx = (int) (((0.75 * binNs) - 1 ) + 0.5) ; 
             vector <double> dxUnique = dx;
             sort(dxUnique.begin(), dxUnique.end());
             std::vector<double>::iterator it;
@@ -142,7 +148,6 @@ void InputData::fuzzData() {
                 dxMin = 0.01 * (*max_element(rawData.begin(), rawData.end()) - *min_element(rawData.begin(), rawData.end()));
                 dxMin = max(dxMin, 1.0e-9);
             } else { 
-                double avg = accumulate(dxUnique.begin() + 1, dxUnique.begin() + k, 0.0);
                 dxMin = 0.01 * accumulate(dxUnique.begin() + 1, dxUnique.begin() + k, 0.0) / (k - 1.0); 
             }
             dxMin = growthFactor * dxMin;
@@ -168,14 +173,9 @@ double InputData::random() {
         y1 = y2;
         useLast = false;
     } else {
-        do {                                    
-#ifdef R
+        do {     
             x1 = 2.0 * ranX() - 1;
             x2 = 2.0 * ranX() - 1;
-#else
-            x1 = 2*(1.0*rand()/RAND_MAX) - 1;
-            x2 = 2*(1.0*rand()/RAND_MAX) - 1;
-#endif
             w = x1 * x1 + x2 * x2;
         } while ( w >= 1.0 );
 
@@ -192,16 +192,14 @@ double InputData::random() {
   void InputData::identifyOutliers() {
          
         double q1 = 0;
-        double q2 = 0;
         double q3 = 0;      
         
         int nValues = rawData.size();    
         
-        int middle = floor(nValues/2);
-        int quarter = floor(middle/2);
+        int middle = (int) (nValues/2);
+        int quarter = (int) (middle/2);
         
         if (nValues%2 == 0) {
-            q2 = (rawData[(int)middle - 1] + rawData[(int)middle + 1])/2;
             if (middle%2 == 0) {
                 q1 = (rawData[(int)quarter - 1] + rawData[(int)quarter])/2;
                 q3 = (rawData[(int)quarter + (int)middle - 1] + rawData[(int)quarter + (int)middle])/2;
@@ -210,7 +208,6 @@ double InputData::random() {
                 q3 = rawData[(int)quarter + (int)middle];
             }
         } else {
-            q2 = rawData[(int)quarter];
             if (middle%2 == 0) {
                 q1 = (rawData[(int)quarter - 1] + rawData[(int)quarter])/2;
                 q3 = (rawData[(int)quarter + (int)middle] + rawData[(int)quarter + (int)middle + 1])/2;
@@ -271,9 +268,7 @@ void InputData::transformData() {
         
     nValues = tempData.size(); 
     if (nValues == 0) {
-#ifndef R
-        cout << "CRITICAL ERROR:  no data!\n";
-#endif
+        out.print("CRITICAL ERROR:  no data!");
         return;
     }
     
@@ -297,7 +292,7 @@ void InputData::setAdaptiveDz() {
      
     double dzMax = 2.0/(nPoints - 1);
         
-    int skip = floor(N/(nPoints - 1));
+    int skip = (int) (N/(nPoints - 1));
     if (skip==0) skip = 1;
                         
     double last = -1.0;
@@ -345,6 +340,7 @@ void InputData::setAdaptiveDz() {
     }
     dzSize = dzVector.size();
     dz = new double[dzSize];
+    delete [] inverse;    
     inverse = new double[dzSize];
     doubleInverse = new double[2*dzSize - 1];
     inverse[0] = dzVector[0]/2.0;

@@ -19,13 +19,14 @@ extern "C" {
             fail[0] = 1;
         }
         
-        for (int i = 0; i < Vx.size(); i++) {
+        for (unsigned i = 0; i < Vx.size(); i++) {
+        fail[0] = -12;
             cdf[i] = Vcdf[i];
             pdf[i] = Vpdf[i];
             x[i] = Vx[i];
             sqr[i] = Vsqr[i];
         }    
-        for (int i = 0; i < Vlagrange.size(); i++) {
+        for (unsigned i = 0; i < Vlagrange.size(); i++) {
             lagrange[i] = Vlagrange[i];
         }
         return;    

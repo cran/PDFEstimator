@@ -14,20 +14,19 @@
 
 #include "InputParameters.h"
 
-InputParameters::InputParameters() {
-    
-    debug = false;    
+InputParameters::InputParameters() {  
    
     inputPath = "";
     inputFile = "specifyFilename.txt";
+    outputPath = "";
     writeFile = true;
     writeHeader = true;
     writeQQ = false;
     writeSQR = false;
+    writeFailed = true;
     qqFile = "";
     sqrFile = "";
     
-    scoreFile = "likelihood.txt";
     boundaryPenalty = true;
     lowerBoundSpecified = false;
     upperBoundSpecified = false;
@@ -39,6 +38,7 @@ InputParameters::InputParameters() {
     startSolutionNumber = 0;
     integrationPoints = -1;
     numberSolutions = 1;
+    numberTrials = 1;
     maxLagrange = 200;//2 for power
     minLagrange = 1;
     nLagrangeAdd = 3;
@@ -65,108 +65,162 @@ InputParameters::InputParameters(const InputParameters& orig) {
 InputParameters::~InputParameters() {
 }
 
-#ifndef R
+
 bool InputParameters::userInput(int argc, char**  argv){
     
     int c;
     bool inputEntered = false;
     
-    while ((c = getopt(argc, argv, "f:o:w:h:y:q:r:l:u:s:p:n:m:d:z:")) != -1)
+    while ((c = getopt(argc, argv, "f:o:w:h:y:q:r:l:u:s:p:n:m:z:a:b:t:c:d:e:x:")) != -1)
     switch (c){        
         case 'f':
             inputFile = optarg;
-            cout << "Input data file name:  " << inputFile << "\n";
+            out.print("Input data file name:  " + inputFile);
             inputEntered = true;
             break; 
         case 'o':
             outputFile = optarg;
-            cout << "Output data file name:  " << outputFile << "\n";
+            out.print("Output data file name:  " + outputFile);
+            break; 
+        case 'a':
+            inputPath = optarg;
+            out.print("Input data path:  " + inputPath);
+            break; 
+        case 'b':
+            outputPath = optarg;
+            out.print("Output data path:  " + outputPath);
             break; 
         case 'w':
             writeOpt = optarg;
             if (writeOpt == "off") {
                 writeFile = false;
-                cout << "Write File:  off\n";
+                out.print("Write File:  off");
+            }
+            break;
+        case 'x':
+            writeOpt = optarg;
+            if (writeOpt == "off") {
+                writeFailed = false;
+                out.print("Write Failed Solutions:  off");
             }
             break;
         case 'h':
             headerOpt = optarg;
             if (headerOpt == "off") {
                 writeHeader = false;
-                cout << "Write File Header:  off\n";
+                out.print("Write File Header:  off");
             }
             break;
         case 'q':
             qqFile = optarg;
             writeQQ = true;
-            cout << "Write QQ File:  " << qqFile << "\n";
+            out.print("Write QQ File:  " + qqFile);
             break;
         case 'r':
             sqrFile = optarg;
             writeSQR = true;
-            cout << "Write SQR File:  " << sqrFile << "\n";
+            out.print("Write SQR File:  " + sqrFile);
             break;
         case 'l': 
             lowerBound = atof(optarg);
-            cout << "lower bound = " << optarg << "\n";
+            out.print("lower bound = ", lowerBound);
             lowerBoundSpecified = true;
             break; 
         case 'u':
             upperBound = atof(optarg);
-            cout << "upper bound = " << optarg << "\n";
+            out.print("upper bound = ", upperBound);
             upperBoundSpecified = true;
             break;        
         case 's':                                                               
             SURDTarget = atof(optarg);
             if (SURDTarget < 1) {
-                cout << "WARNING: coverage must be between 1 and 100; setting to 1\n";
+                out.print("WARNING: coverage must be between 1 and 100; setting to 1");
                 SURDTarget = 1;
             } else if (SURDTarget > 100) {
-                cout << "WARNING:  coverage must be between 1 and 100; setting to 100\n";
+                out.print("WARNING:  coverage must be between 1 and 100; setting to 100");
                 SURDTarget = 100;
             } else {
-                cout << "coverage = " << SURDTarget << "%\n";
+                out.print("coverage = ", SURDTarget);
+            }
+            break;
+        case 'd':                                                               
+            SURDMinimum = atof(optarg);
+            if (SURDMinimum < 1) {
+                out.print("WARNING: coverage must be between 1 and 100; setting to 1");
+                SURDMinimum = 1;
+            } else if (SURDMinimum > 100) {
+                out.print("WARNING:  coverage must be between 1 and 100; setting to 100");
+                SURDMinimum = 100;
+            } else {
+                out.print("maximum coverage = ", SURDMinimum);
+            }
+            break;
+        case 'e':                                                               
+            SURDMaximum = atof(optarg);
+            if (SURDMaximum < 1) {
+                out.print("WARNING: coverage must be between 1 and 100; setting to 1");
+                SURDMaximum = 1;
+            } else if (SURDMaximum > 100) {
+                out.print("WARNING:  coverage must be between 1 and 100; setting to 100");
+                SURDMaximum = 100;
+            } else {
+                out.print("minimum coverage = ", SURDMaximum);
             }
             break;
         case 'p':                                                               
             integrationPoints = atoi(optarg);
-            cout << "integration points = " << optarg << "\n";
+            out.print("integration points = " + integrationPoints);
             break;
         case 'n':                                                               
             maxLagrange = atoi(optarg);
-            cout << "maximum Lagrange = " << optarg << "\n";
+            out.print("maximum Lagrange = ", maxLagrange);
+            break;
+        case 'c':                                                               
+            numberSolutions = atoi(optarg);
+            out.print("number of solutions = ", numberSolutions);
+            break;
+        case 't':                                                               
+            numberTrials = atoi(optarg);
+            out.print("number of trials = ", numberTrials);
             break;
         case 'm':                                                               
             minLagrange = atoi(optarg);
-            cout << "minimum Lagrange = " << optarg << "\n";
+            out.print("minimum Lagrange = ", minLagrange);
             break;
         case 'y':
             penaltyOpt = optarg;
             if (penaltyOpt == "off") {
                 boundaryPenalty = false;
-                cout << "Penalty:  off\n";
-            }
-        case 'd':
-            debugOpt = optarg;
-            if (debugOpt == "on") {
-                debug = true;
-                cout << "Debug:  on\n";
-            }
-            break;
-            break; 
+                out.print("Penalty:  off");
+            }        
         case 'z': 
             fuzzFactor = atof(optarg);
-            cout << "fuzz factor = " << optarg << "\n";
+            out.print("fuzz factor = ", fuzzFactor);
             fuzz = true;
             break; 
         default:
-            cout << "Invalid parameter flag: " << c << "\n\n";
+            out.print("Invalid parameter flag: ", c);
             printUsage();            
             return false;
     }
     if (!inputEntered) {
-        cout << "Input file name required\n\n";
+        out.print("Input file name required");
         printUsage();
+        return false;
+    }
+    if (numberTrials < numberSolutions) {
+        out.print("Number of requested solutions exceeds number of trials");
+    }
+    if (SURDMaximum < SURDMinimum) {
+        out.print("maximum coverage cannot be less than minimum coverage values");
+        return false;
+    }
+    if (SURDMaximum < SURDTarget) {
+        out.print("maximum coverage cannot be less than target coverage values");
+        return false;
+    }
+    if (SURDMinimum > SURDTarget) {
+        out.print("minimum coverage cannot be greater than target coverage values");
         return false;
     }
     return true;
@@ -176,24 +230,23 @@ bool InputParameters::userInput(int argc, char**  argv){
 
 
 void InputParameters::printUsage() {
-    cout << "Usage:\n\n";
-    cout << "getpdf -f <filename> [-option <argument>]\n\n";
+    out.print("Usage:");
+    out.print("getpdf -f <filename> [-option <argument>]");
     
-    cout << "Options:\n\n";
-    cout << " -f    input filename (REQUIRED)\n";
-    cout << " -o    main output filename\n";
-    cout << " -w    write main output file [on/off]\n";
-    cout << " -h    include header info in main output file [on/off]\n";
-    cout << " -q    QQ filename\n";
-    cout << " -r    SQR filename\n";
-    cout << " -l    lower bound\n";
-    cout << " -u    upper bound\n";
-    cout << " -s    score threshold percentage [1-100]\n";
-    cout << " -p    minimum number of integration points\n";
-    cout << " -n    maximum number of Lagrange multipliers\n";
-    cout << " -m    minimum number of Lagrange multipliers\n";
-    cout << " -y    penalty flag [on/off]\n";
-    cout << " -d    debug [on/off]\n";
+    out.print("Options:");
+    out.print(" -f    input filename (REQUIRED)");
+    out.print(" -o    main output filename");
+    out.print( " -w    write main output file [on/off]");
+    out.print( " -h    include header info in main output file [on/off]");
+    out.print( " -q    QQ filename");
+    out.print( " -r    SQR filename");
+    out.print( " -l    lower bound");
+    out.print( " -u    upper bound");
+    out.print( " -s    score threshold percentage [1-100]");
+    out.print( " -p    minimum number of integration points");
+    out.print( " -n    maximum number of Lagrange multipliers");
+    out.print( " -m    minimum number of Lagrange multipliers");
+    out.print( " -y    penalty flag [on/off]");
+    out.print( " -d    debug [on/off]");
 }
 
-#endif

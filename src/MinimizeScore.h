@@ -38,13 +38,17 @@ public:
     bool minimize(InputParameters *input, const InputData& data, Score& score);
     vector <double> getLagrange();
     
+    OutputControl out;
+    
     int    mode;
     float duration;
     double bestScore;
-    double * bestLagrange;
     double  normalize;
+    double * bestLagrange;
     double * trialRandom;
 private:
+    int     nPoints;
+    int     N;    
     int maxLagrange;
     int seed;
     bool useLast;
@@ -55,8 +59,6 @@ private:
     double * dz;    
     double * doubleInverse;
     double * xUntransform;
-    int     nPoints;
-    int     N;    
     double * bestRandom;
     double * rawDataPartition;
     vector < vector < double > > T;

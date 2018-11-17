@@ -36,7 +36,7 @@ public:
     vector <double> lagrange; 
     vector <double> Vsqr;
     
-    bool solutionFailed = 0;
+    bool solutionFailed;
         
 private:
 

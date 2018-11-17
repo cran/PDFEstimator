@@ -24,9 +24,9 @@ public:
     ChebyShev(const ChebyShev& orig);
     virtual ~ChebyShev();
     void initialize(double dz[], int size);
-    double * getTerms(int mode);
+    double * getTerms(unsigned mode);
 //    vector <double> getTerms(int mode);
-    vector < vector < double > >  getAllTerms(int mode);
+    vector < vector < double > >  getAllTerms(unsigned mode);
     
 private:         
     int size;    

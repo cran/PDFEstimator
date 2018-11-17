@@ -32,7 +32,7 @@ public:
     WriteResults(const WriteResults& orig);
     virtual ~WriteResults();
    
-    void writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, Score *score, bool failed);
+    void writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, int trial, Score *score, bool failed);
     void createSolution(InputParameters *input, InputData *data, MinimizeScore *solution, Score *score);
     void test(InputParameters *input, InputData *data, MinimizeScore *solution);
     
@@ -47,6 +47,9 @@ public:
     vector <double> PDF;   
     vector <double> CDF;   
     vector <double> SQR;
+    
+private:
+    OutputControl out;
 
 };
 

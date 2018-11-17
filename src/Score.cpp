@@ -17,50 +17,26 @@
 #include "Score.h"
 #include "WriteResults.h"
 
-Score::Score(string scoreFile, double confidenceTarget, double confidenceMin, double confidenceMax, bool boundaryPenalty) {     
-    this->scoreFile = scoreFile;
+Score::Score(double confidenceTarget, double confidenceMin, double confidenceMax, bool boundaryPenalty) {     
     this->penalty = boundaryPenalty;
-//    readFile();    
+    penaltyScore = 0;
     getValues();
     targetScore = getTargetScore(confidenceTarget);
     minimumScore = getTargetScore(confidenceMin);
     maximumScore = getTargetScore(confidenceMax);
+    likelihood = 0;
 }
 
 Score::Score(const Score& orig) {
 }
 
 Score::~Score() {
+    delete [] factorials;
+    delete [] indices;
+    delete [] uniformL;
 }
 
-bool Score::readFile() {
-    
-    fstream fin;
-    string line;
-        
-    fin.open(scoreFile.c_str());
-    
-
-    if(!fin.is_open()){
-#ifndef R
-        cout << "Failed to open score file " <<  scoreFile.c_str() << "\n";\
-
-#endif
-        return false;
-    }
-    istringstream iss;
-    while (getline(fin, line)) {
-        double columnOne;
-        double columnTwo;
-        iss.str(line);
-        iss >> columnOne >> columnTwo;
-        scores.push_back(columnOne);
-        SURDs.push_back(columnTwo);
-    }    
-    return true;
-}
-
- double Score::calculateScore(double r[], int N, int p){
+double Score::calculateScore(double r[], int N, int p){
     likelihood = 0;
     penaltyScore = 0;
     for (int i = 0; i < p; i++) {
@@ -96,7 +72,7 @@ double Score::getTargetScore(double SURD) {
  
     vector<double>::iterator it;
     it = lower_bound (SURDs.begin(), SURDs.end(), SURD/100);
-    int index = it - SURDs.begin();
+    unsigned index = it - SURDs.begin();
     
     if (index == SURDs.size()) {
         return scores[index - 1];
@@ -118,7 +94,7 @@ double Score::getConfidence(double score) {
  
     vector<double>::iterator it;
     it = lower_bound (scores.begin(), scores.end(), score);
-    int index = it - scores.begin();
+    unsigned index = it - scores.begin();
     
     if (index == scores.size()) {
         return SURDs[index - 1];

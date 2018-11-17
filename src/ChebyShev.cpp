@@ -42,7 +42,7 @@ void ChebyShev::initialize(double dz[], int size) {
     termsT.push_back(twoT);
 }
 
-double* ChebyShev::getTerms(int mode) {   
+double* ChebyShev::getTerms(unsigned mode) {   
 //vector <double> ChebyShev::getTerms(int mode) {   
     if (termsT.size() <= mode) {
         vector <double> test = addMode(mode);
@@ -54,8 +54,8 @@ double* ChebyShev::getTerms(int mode) {
     }
 }
 
-vector < vector < double > > ChebyShev::getAllTerms(int mode) {
-    for (int i = 0; i < mode; i++) {
+vector < vector < double > > ChebyShev::getAllTerms(unsigned mode) {
+    for (unsigned i = 0; i < mode; i++) {
         if (termsT.size() <= i) {
             addMode(i);
         }

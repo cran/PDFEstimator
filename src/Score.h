@@ -30,7 +30,7 @@ public:
     double minimumScore;
     double maximumScore;
     
-    Score(string scoreFile, double confidenceTarget, double confidenceMin, double confidenceMax, bool boundaryPenalty);
+    Score(double confidenceTarget, double confidenceMin, double confidenceMax, bool boundaryPenalty);
     Score(const Score& orig);
     virtual ~Score();    
     void setFactorials (int N, int p);
@@ -39,8 +39,7 @@ public:
     double getConfidence(double score);
     double getPenalty() {return penaltyScore;};
     double calculateScore(double r[], int N, int p);
-private:
-    string  scoreFile;
+private:   
     vector <double> scores;
     vector <double> SURDs;
     double likelihood;

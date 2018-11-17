@@ -27,46 +27,61 @@ void WriteResults::test(InputParameters *input, InputData *data, MinimizeScore *
     
 }
 
-void WriteResults::writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, Score *score, bool failed) {
+void WriteResults::writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, int trialNumber, Score *score, bool failed) {
     
     bool power = false;
     
     double max = data->maximumCalc;
     double min = data->minimumCalc;      
     double normFactor = 1;    
-    float time = solution->duration;
     
-//    cout << "time=" << time << " seconds\n";
     ofstream outFile;
     
     if (input->writeFile) {
         ostringstream solutionString; 
-        solutionString << solutionNumber;
+        solutionString << trialNumber;
         ostringstream surdString; 
         surdString << input->SURDTarget;  
         string filename;
         if (input->outputFile == "") {
             if (failed) {
-                filename = "FAILED_PDF_" + surdString.str() + "_" + input->inputFile;
+                if (trialNumber > 1) {
+                    filename = "FAILED_PDF_" + surdString.str() + "_" + solutionString.str() + "_" + input->inputFile;
+                } else {
+                    filename = "FAILED_PDF_" + surdString.str() + "_" + input->inputFile;
+                }
             } else {
-                filename = "PDF_" + surdString.str() + "_" + input->inputFile;
+                if (trialNumber > 1) {
+                    filename = "PDF_" + surdString.str() + "_" + solutionString.str() + "_" + input->inputFile;
+                } else {
+                    filename = "PDF_" + surdString.str() + "_" + input->inputFile;
+                }
             }
         } else {
             filename = input->outputFile;
         }
+        filename = input->outputPath + filename;
         outFile.open((filename).c_str());
+        if(!outFile.is_open()){
+            out.print("Failed to open data file " + filename);
+            return;
+        }
     }
     
     if ((input->writeFile) && (input->writeHeader)) {
         if (failed) {
             outFile << "***** FAILED SOLUTION **********\n\n";
         }
+#ifdef debug
+        float time = solution->duration;
         outFile << "#   calculation time: " << time << " seconds\n";
         if (time >= 60) {
             outFile << "#                    (" << time/60 << " minutes)\n";
         }
-                      
         outFile << "#\n";
+#endif          
+        outFile << "#   total # of trials: " << trialNumber << " \n";
+        outFile << "#\n";            
         outFile << "# PARAMETERS\n";            
         outFile << "#\n";            
         outFile << "#   minimum confidence:           "  << input->SURDTarget << "%\n";    
@@ -137,9 +152,7 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
     for (int k = 0; k < dzSize; k++) {
         z = (2*q - max - min) / (max - min);   
         if (fabs(z) > 1.00001) {
-#ifndef R
-            cout << "transformed value greater than 1: " << z << "\n";
-#endif
+            out.print("transformed value greater than 1: ", z);
         }
         termsT.clear();
         termsT.push_back(1.0);
@@ -204,10 +217,7 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
         }
     }
     if (fabs(1.0 - CDF[count - 1]) > 0.01) {
-#ifndef R
-        cout << "ERROR: Normalization is incorrect by more than 0->01 percent error->\n";
-        cout << "       Integral under the curve = " << (CDF[count - 1]) << "\n";
-#endif
+        out.print("ERROR: Normalization is incorrect by more than 1%: ", (CDF[count - 1]));
     }
     if (input->writeFile) {
         outFile.close();
@@ -337,6 +347,10 @@ void WriteResults::writeColumn(string filename, double r[], int length) {
 void WriteResults::writeQQ(string filename, double r[], int length, bool sqr) {
     ofstream outFile;
     outFile.open(filename.c_str());
+    if(!outFile.is_open()){
+        out.print("Failed to open data file " + filename);
+        return;
+    }
    
     for (int i = 0; i < length; i++) {
         double position = (i + 1) * 1.0 / (length + 1);

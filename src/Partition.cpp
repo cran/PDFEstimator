@@ -99,26 +99,19 @@ vector <int> Partition::getDataSubset(int lo, int hi, int size, vector <int> ind
     
     midPoint = round(midPoint); 
     int iMidPoint = (int) midPoint;
-    if ((iMidPoint == lo) || (iMidPoint == hi)) {
-#ifndef R
-        cout << "Error getting subset:  MidPoint is on Boundary\n";
-#endif
+    if ((iMidPoint == lo) || (iMidPoint == hi)) {       
         return indices;
     }
-//    cout << "midpoint=" << iMidPoint << "\n";
     indices.push_back(iMidPoint);
     if (size == 1) {
         return indices;
     }
-    if (size == 0) {
-//        cout << "Error getting subset:  Size is Zero\n";
-    }
     size--;
     if ((midPoint - iMidPoint) >= 0.5) {
         size1 = ceil(size/2.0);
-        size2 = floor(size/2.0);
+        size2 = (int) (size/2.0);
     } else {
-        size1 = floor(size/2.0);
+        size1 = (int) (size/2.0);
         size2 = ceil(size/2.0);
     }
     if (size1 != 0) {

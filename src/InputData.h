@@ -19,7 +19,6 @@
 #include <fstream>
 #include <vector>
 #include <stdlib.h>
-#include <iostream>
 #include <algorithm>
 #include <math.h>
 #include "InputParameters.h"
@@ -53,7 +52,9 @@ public:
     void setData(vector <double> data);
     void processData();
 private:
+    OutputControl out;    
     InputParameters input; 
+    
     bool leftOutliers;
     bool rightOutliers;
     bool useLast;

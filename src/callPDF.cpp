@@ -33,7 +33,7 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
     
     input->integrationPoints = points - 1;
    
-    Score *score = new Score(input->scoreFile, input->SURDTarget, input->SURDMinimum, input->SURDMaximum, input->boundaryPenalty);    
+    Score *score = new Score(input->SURDTarget, input->SURDMinimum, input->SURDMaximum, input->boundaryPenalty);    
     MinimizeScore *minimumPDF = new MinimizeScore();
     InputData *data = new InputData(*input);  
     vector <double> inputData;

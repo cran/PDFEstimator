@@ -20,15 +20,23 @@
 MinimizeScore::MinimizeScore() {
     
     normalize = 0;    
-    bool useLast;
-    double y2;    
+    useLast = false;
+    y2 = 0;
+    seed = 12345678;
+    nPoints = 0;
+    N = 0;
+    maxLagrange = 0; 
+    mode = 0; 
+    duration = 0; 
+    bestScore = 0; 
 }
 
 MinimizeScore::MinimizeScore(const MinimizeScore& orig) {
 }
 
 MinimizeScore::~MinimizeScore() {
-     delete trialRandom;
+     delete [] trialRandom;
+     delete [] bestLagrange;
 }
 
 vector <double> MinimizeScore::getLagrange() {
@@ -39,11 +47,13 @@ vector <double> MinimizeScore::getLagrange() {
     return lagrange;
 }
 
-bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Score& score) {
-           
+bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Score& score) {         
     
-    bool debug = input->debug;
-    
+#ifdef debug
+    clock_t algorithmTime;                                                  
+    algorithmTime = clock();
+#endif
+  
     int minLagrange = input->minLagrange;
     maxLagrange = input->maxLagrange;
     int nLagrangeAdd = input->nLagrangeAdd;
@@ -99,6 +109,13 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     bestRandom = new double [N];    
     rawDataPartition = new double [N];
     
+    for (int c = 0; c < N; c++) {
+        trialRandom[c] = 0;
+        bestRandom[c] = 0;    
+        rawDataPartition[c] = 0;
+    
+    }
+    
     double trialScore = 0;
     bestScore = -numeric_limits<double>::max();
     double targetScore = score.targetScore;
@@ -123,15 +140,13 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     calculatePDF(cdf, trialLagrange, mode);                          
 #endif
     map(trialRandom, cdf, rawDataPartition, partitionSize);
-    bool continueLooking = true;    
-   
+    bool continueLooking = true;       
     
-    bestScore = score.calculateScore(trialRandom, targetPartition, partitionSize);  
-#ifndef R
-    if (debug) {
-        cout << "initial score=" << bestScore << " partitionsize: " << partitionSize << " target: " << targetPartition << "\n" ;
-    }
-#endif
+    bestScore = score.calculateScore(trialRandom, targetPartition, partitionSize);   
+    out.print("initial score", bestScore);
+    out.print("partition size", partitionSize);
+    out.print("target size", targetPartition);
+    
     if (bestScore > targetScore) {                        
         continueLooking = false;       
     }
@@ -142,12 +157,8 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
             trialLagrange[1] = 0;
             bestLagrange[1] = 0;
             mode = 2;
-        } else {
-#ifndef R
-            if (debug) {
-                cout << "Maximum of " << maxLagrange << " lagrange multipliers has been exceeded\n";
-            }
-#endif
+        } else {           
+            out.print("*Maximum number of lagrange multipliers exceeded", maxLagrange);
             return true;
         }
     }
@@ -175,10 +186,10 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
                         
             trialScore = score.calculateScore(trialRandom, targetPartition, partitionSize);    
             if (trialScore > bestScore) {
-#ifndef R
-                if (debug) {
-                    cout << "SURD: " << score.getLikelihood() << " New score: " << trialScore << " partitionsize: " << partitionSize << " target: " << targetPartition << "\n" ;
-                }
+#ifdef debug
+                ostringstream strOut;
+                strOut << "SURD score: " << score.getLikelihood() << ";  total score: " << trialScore << ";  partition size: " << partitionSize << "; target:  " << targetPartition;                                      
+                out.print(strOut.str());
 #endif
                 if (score.getLikelihood() < maximumScore) {
                     bestScore = trialScore;     
@@ -187,12 +198,8 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
                     bestLagrange[k] = trialLagrange[k];
                 }
                 bestRandom[0] = trialRandom[0];
-                if ((score.getLikelihood() > targetScore) && (score.getLikelihood() < maximumScore)) {                        
-#ifndef R
-                    if (debug) {
-                        cout << "Solution found\n";
-                    }
-#endif
+                if ((score.getLikelihood() > targetScore) && (score.getLikelihood() < maximumScore)) { 
+                    out.print("*Solution found");
                     break;       
                 }    
             }
@@ -207,28 +214,16 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
                 mode += inc;    
                 if (mode > maxLagrange) {            
                     if (score.getLikelihood() > minimumScore) {
-#ifndef R
-                        if (debug) {
-                            cout << "Lower threshold accepted: " << score.getLikelihood() << "\n";
-                        }
-#endif
+                        out.print("*Lower threshold accepted", score.getLikelihood());                            
                     } else {
-#ifndef R
-                        if (debug) {
-                            cout << "FAILED: Maximum of " << maxLagrange << " lagrange multipliers has been exceeded\n";
-                            solutionNotFound = true;
-                            continueLooking = false;
-                        }
-#endif
+                        out.print("*Maximum number of lagrange multipliers exceeded", maxLagrange);
+                        solutionNotFound = true;
+                        continueLooking = false;
                     }
                     mode -= inc;
                     break;
                 }   
-#ifndef R
-                if (debug) {
-                    cout << "Adding lagrange: " << mode << "\n";
-                }
-#endif        
+                out.print("*Adding lagrange", mode);
                 for (int i = (mode-inc); i < mode; i++) {
                     trialLagrange[i] = 0;
                     bestLagrange[i] = 0;
@@ -237,17 +232,9 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
                    
                 if (fabs(bestScore-lastLagrangeScore)/fabs(lastLagrangeScore) < fractionLagrangeAdd) { 
                     if (lagrangeAddCount > nLagrangeAdd) { 
-#ifndef R
-                        if (debug) {
-                            cout << "Improvement not found in required number of attempts.\n";
-                        }
-#endif
+                        out.print("*Improvement not found in required number of attempts");
                         if ((score.getLikelihood() > minimumScore) && (score.getLikelihood() < maximumScore)) {
-#ifndef R
-                            if (debug) {
-                                cout << "Lower threshold accepted: " << score.getLikelihood() << "\n";
-                            }
-#endif
+                            out.print("*Lower threshold accepted", score.getLikelihood());
                             targetScore = score.getLikelihood();
                         } else {
                             solutionNotFound = true;
@@ -290,6 +277,7 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
             score.setFactorials(targetPartition, partitionSize); 
             bestScore = -numeric_limits<double>::max();
         } else {
+            if (partitionSize == N) break; //added 11/3/2018
             targetPartition = (targetPartition - 1) * 2 + 1;
             if (targetPartition >= N) {
                 targetPartition = N;
@@ -298,34 +286,42 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
             score.setFactorials(targetPartition, partitionSize);             
             bestScore = -numeric_limits<double>::max();
         }     
+                                      
         double sigmaFactor = sqrt(partitionSize*1.0/targetPartition)*sqrt(1.0/mode);       
         initSigma = originalInitSigma*sigmaFactor;
         finalSigma = originalFinalSigma*sigmaFactor;
         currentSigma = initSigma;
     }  
+        
+#ifdef debug
+    algorithmTime = clock() - algorithmTime;  
+    duration = ((float) algorithmTime)/CLOCKS_PER_SEC;
+#endif
     
     if (input->writeQQ) {
         WriteResults write;
-        write.writeQQ(input->qqFile, trialRandom, partitionSize, false);
+        string filename;
+        filename = input->outputPath + input->qqFile;
+        write.writeQQ(filename, trialRandom, partitionSize, false);
     }
     if (input->writeSQR) {
         WriteResults write; 
-        write.writeQQ(input->sqrFile, trialRandom, partitionSize, true);
+        string filename;
+        filename = input->outputPath  + input->sqrFile;
+        write.writeQQ(filename, trialRandom, partitionSize, true);
     }
-//    delete trialRandom;
-    delete bestRandom;
-    delete rawDataPartition;
+    delete [] trialLagrange;
+    delete [] bestRandom;
+    delete [] rawDataPartition;
     delete [] cdf;
     
-//    algorithmTime = clock() - algorithmTime;  
-//    duration = ((float) algorithmTime)/CLOCKS_PER_SEC;
-#ifndef R
-#ifdef POWER
-    cout << "power exponent = " << bestLagrange[1] << "\n";                   
+
+#ifdef POWER   
+    out.print("power exponent", bestLagrange[1]);
 #else
-//    cout << "normalize = " << normalize << "\n";
+    out.print("Normalize", normalize);
 #endif
-#endif
+
     return solutionNotFound;
  
 }
@@ -462,21 +458,16 @@ void MinimizeScore::funnelDiffusion(double original[], double updated[], int arr
 }
 
 double MinimizeScore::random(double m, double s) {
-    double x1, x2, w, y1;
+    double x1, x2, w = 2, y1;
 
     
     if (useLast) {
         y1 = y2;
         useLast = false;
     } else {
-        do {                    
-#ifdef R
+        do {  
             x1 = 2.0 * ranX() - 1;
             x2 = 2.0 * ranX() - 1;
-#else
-            x1 = 2*(1.0*rand()/RAND_MAX) - 1;
-            x2 = 2*(1.0*rand()/RAND_MAX) - 1;
-#endif
             w = x1 * x1 + x2 * x2;
         } while ( w >= 1.0 );
 
