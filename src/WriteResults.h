@@ -21,8 +21,11 @@
 #include <string>
 #include <sstream>
 #include <iomanip>      
+#include <time.h>
 #include "MinimizeScore.h"
 #include "OutputControl.h"
+
+//#define clock
 
 using namespace std;
 
@@ -34,9 +37,9 @@ public:
    
     void writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, int trial, Score *score, bool failed);
     void createSolution(InputParameters *input, InputData *data, MinimizeScore *solution, Score *score);
-    void test(InputParameters *input, InputData *data, MinimizeScore *solution);
     
     void writeColumn(string filename, double r[], int length);
+    void writeColumn(string filename, int r[], int length);
     void writeColumn(string filename, vector <double> r, int length);
     void writeColumn(string filename, vector <int> r, int length);
     
@@ -47,8 +50,8 @@ public:
     vector <double> PDF;   
     vector <double> CDF;   
     vector <double> SQR;
+    vector <double> L;
     
-private:
     OutputControl out;
 
 };

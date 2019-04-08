@@ -49,6 +49,5 @@ estimatePDF <- function(sample, pdfLength = NULL, lowerBound = NULL, upperBound 
 				x = as.double(vector("numeric", outputLength)), 
 				pdf = as.double(vector("numeric", outputLength)), 
 				cdf = as.double(vector("numeric", outputLength)),
-				sqr = as.double(vector("numeric", outputLength)),
-				lagrange = as.double(vector("numeric", 200)))
+				sqr = as.double(vector("numeric", inputLength)))
 }

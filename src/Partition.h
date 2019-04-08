@@ -18,7 +18,6 @@
 #include <math.h>
 #include <iostream>
 #include <algorithm>
-#include "OutputControl.h"
 
 using namespace std;
 

@@ -15,6 +15,8 @@
 #include "InputParameters.h"
 
 InputParameters::InputParameters() {  
+    
+    debug = false;
    
     inputPath = "";
     inputFile = "specifyFilename.txt";
@@ -27,7 +29,6 @@ InputParameters::InputParameters() {
     qqFile = "";
     sqrFile = "";
     
-    boundaryPenalty = true;
     lowerBoundSpecified = false;
     upperBoundSpecified = false;
     
@@ -41,7 +42,7 @@ InputParameters::InputParameters() {
     numberTrials = 1;
     maxLagrange = 200;//2 for power
     minLagrange = 1;
-    nLagrangeAdd = 3;
+    nLagrangeAdd = 5;
     outlierCutoff = 7.0;    
 
     fuzz = false;
@@ -71,8 +72,16 @@ bool InputParameters::userInput(int argc, char**  argv){
     int c;
     bool inputEntered = false;
     
-    while ((c = getopt(argc, argv, "f:o:w:h:y:q:r:l:u:s:p:n:m:z:a:b:t:c:d:e:x:")) != -1)
-    switch (c){        
+    while ((c = getopt(argc, argv, "f:o:w:h:q:r:l:u:s:p:n:m:z:a:b:t:c:d:e:x:g:")) != -1)
+    switch (c){    
+         case 'g':
+            debugOpt = optarg;
+            if (debugOpt == "on") {
+                debug = true;
+                out.debug = true;
+                out.print("debug:  on");
+            }
+            break;
         case 'f':
             inputFile = optarg;
             out.print("Input data file name:  " + inputFile);
@@ -103,7 +112,7 @@ bool InputParameters::userInput(int argc, char**  argv){
                 writeFailed = false;
                 out.print("Write Failed Solutions:  off");
             }
-            break;
+            break;        
         case 'h':
             headerOpt = optarg;
             if (headerOpt == "off") {
@@ -186,13 +195,7 @@ bool InputParameters::userInput(int argc, char**  argv){
         case 'm':                                                               
             minLagrange = atoi(optarg);
             out.print("minimum Lagrange = ", minLagrange);
-            break;
-        case 'y':
-            penaltyOpt = optarg;
-            if (penaltyOpt == "off") {
-                boundaryPenalty = false;
-                out.print("Penalty:  off");
-            }        
+            break;        
         case 'z': 
             fuzzFactor = atof(optarg);
             out.print("fuzz factor = ", fuzzFactor);

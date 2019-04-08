@@ -1,15 +1,8 @@
 /* 
- * PDF Estimator:  A non-parametric probability density estimation tool based on maximum entropy
  * File:   Score.hpp
- * Copyright (C) 2018
- * Jenny Farmer jfarmer6@uncc.edu
- * Donald Jacobs djacobs1@uncc.edu
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published 
- * by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is distributed in 
- * the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
- * PURPOSE.  See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with 
- * this program.  If not, see <http://www.gnu.org/licenses/>.
+ * Author: jenny
+ *
+ * Created on February 8, 2019, 8:33 PM
  */
 
 #ifndef SCORE_HPP
@@ -18,44 +11,40 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-#include <math.h>
-#include "OutputControl.h"
 #include "Partition.h"
-
-using namespace std;
+#include <math.h>
 
 class Score {
-public:    
+public:
     double targetScore;
     double minimumScore;
     double maximumScore;
     
-    Score(double confidenceTarget, double confidenceMin, double confidenceMax, bool boundaryPenalty);
-    Score(const Score& orig);
-    virtual ~Score();    
-    void setFactorials (int N, int p);
-    int * getIndices(){return indices;};
+    Score() {};
+    Score(const Score& orig) {};
+    Score(double confidenceTarget, double confidenceMin, double confidenceMax); 
+    virtual ~Score();
+    
     double getLikelihood() {return likelihood;};
-    double getConfidence(double score);
-    double getPenalty() {return penaltyScore;};
+    int * getIndices(){return indices;}
+    void setVarianceMin(bool qzVar) {minimizeVariance = qzVar;}
+    void setIndices (int N, int p);
+    double getConfidence(double score);    
     double calculateScore(double r[], int N, int p);
-private:   
+    double SURD;    
+    double QZVariance;
+    
+private:
     vector <double> scores;
     vector <double> SURDs;
     double likelihood;
-    double * factorials;
     int    * indices;
-    bool     penalty;
-    double * uniformL;
-    int      nEndpoints; 
-    double penaltyScore;
     
-    bool   readFile();
-    void   getValues();
-    double smartFactorial (int x);
-    double factorial (int n);
-    double stirlingApproxLn(double x);
-    double getTargetScore(double SURD);
+    bool minimizeVariance;
+    
+    double getTargetScore(double SURD);  
+    void getValues();
+    
 };
 
 #endif	/* SCORE_HPP */

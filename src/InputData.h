@@ -21,9 +21,9 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <math.h>
+#include "OutputControl.h"
 #include "InputParameters.h"
 #include "ChebyShev.h"
-#include "OutputControl.h"
 
 using namespace std;
 
@@ -50,26 +50,20 @@ public:
     InputData(const InputData& orig);
     bool readData();
     void setData(vector <double> data);
-    void processData();
-private:
-    OutputControl out;    
+    bool processData();
+    OutputControl out;   
+private: 
     InputParameters input; 
     
     bool leftOutliers;
     bool rightOutliers;
-    bool useLast;
-    double y2;    
-    double seed;
     
     vector <double> rawData;
     vector <double> transformedData;
     vector <double> tempData;
-    void transformData();
+    bool transformData();
     void setAdaptiveDz();
     void identifyOutliers(); 
-    void fuzzData();
-    double random();
-    double ranX();
 };
 
 #endif	/* INPUTDATA_HPP */

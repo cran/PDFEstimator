@@ -27,12 +27,8 @@ A nonparametric density estimator based on the maximum-entropy method.  Accurate
 
 sampleSize = 1000
 sample = rnorm(sampleSize, 0, 1)
-dist = estimatePDF(sample, lowerBound = -3, upperBound = 3)
+dist = estimatePDF(sample)
+#, lowerBound = -3, upperBound = 3)
 plot(dist$x, dist$pdf)
 
-
-#Plots scaled quantile residual fluctuations
-
-x = seq(1/dist$outputLength, 1, by = 1/dist$outputLength)
-plot(x, dist$sqr, type = "l") 
 }

@@ -33,7 +33,7 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
     
     input->integrationPoints = points - 1;
    
-    Score *score = new Score(input->SURDTarget, input->SURDMinimum, input->SURDMaximum, input->boundaryPenalty);    
+    Score *score = new Score(input->SURDTarget, input->SURDMinimum, input->SURDMaximum);    
     MinimizeScore *minimumPDF = new MinimizeScore();
     InputData *data = new InputData(*input);  
     vector <double> inputData;
@@ -43,23 +43,25 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
     input->writeHeader = false;
     input->writeFile = false;
     data->setData(inputData);     
-    data->processData();
-    solutionFailed = minimumPDF->minimize(input, *data, *score);
-    lagrange = minimumPDF->getLagrange();        
-    WriteResults write;        
-    write.createSolution(input, data, minimumPDF, score);  
+    if (data->processData()) {        
+        solutionFailed = minimumPDF->minimize(input, *data, *score);
+        WriteResults write;        
+        write.createSolution(input, data, minimumPDF, score);  
 
-    if (!solutionFailed) {
-        write.createQQ(minimumPDF->trialRandom, sampleLength);   
-        Vsqr = write.SQR;
+        if (!solutionFailed) {
+            write.createQQ(minimumPDF->trialRandom, data->N);   
+            Vsqr = write.SQR;
+        }
+        Vcdf = write.CDF;
+        Vpdf = write.PDF;
+        Vx   = write.x;     
+        delete data;
+        delete score;
+        delete minimumPDF;
+    } else {
+        solutionFailed = true;
     }
-    Vcdf = write.CDF;
-    Vpdf = write.PDF;
-    Vx   = write.x;     
     
-    delete data;
-    delete score;
     delete input;
-    delete minimumPDF;
 }
 

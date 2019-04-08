@@ -34,9 +34,6 @@ InputData::InputData(const InputParameters& input) {
     leftOutliers = false;
     rightOutliers = false;
     
-    useLast = false;
-    y2 = 0;    
-    seed = 12345678;
 }
 
 InputData::InputData(const InputData& orig) {
@@ -57,30 +54,34 @@ bool InputData::readData() {
     fin.open((input.inputPath + input.inputFile).c_str());
 
     if(!fin.is_open()){
-        out.print("Failed to open data file " + input.inputFile);
+        out.error("Failed to open data file " + input.inputFile);
         return false;
     }
 	
+    int temp = 0;
     while (getline(fin, line)) {
         double test = atof(line.c_str());
+        if (test == 0) {
+            test = 0;
+        }
+        temp++;
         rawData.push_back(test);
     }
     if (rawData.size() == 0) {
-        out.print("No data in " + input.inputFile);
+        out.error("No data in " + input.inputFile);
         return false;        
     }
    
     fin.close();   
-    processData();
-    return true;
+    return processData();
 }
     
 void InputData::setData(vector<double> data) {
-    rawData.reserve(data.size());
+    rawData.resize(data.size());
     rawData = data;
 }
 
-void InputData::processData() {   
+bool InputData::processData() {   
     nPoints = input.integrationPoints;
     if (nPoints == -1) {
         nPoints = (int) (200 + rawData.size()/200.0);
@@ -90,103 +91,18 @@ void InputData::processData() {
     sort(rawData.begin(), rawData.end());
     minimumRaw = rawData[0];
     maximumRaw = rawData[rawData.size() - 1];
+    if (minimumRaw == maximumRaw) {        
+        out.error("All input data has the same value ", minimumRaw);
+        return false;        
+    }
     identifyOutliers();
-    transformData();  
+    if (!transformData()) {
+        return false;
+    }
     setAdaptiveDz();  
     cheby.initialize(doubleInverse, 2*nPointsAdjust-1);
-    return;
+    return true;
 }
-
-void InputData::fuzzData() {
-    int growthFactor = 1;
-    int countFuzz = 0;
-    int flagFuzz = 1;  // increase for more fuzzing                
-    double ratio_0 = 1.0e-10;
-    int nScramble = 0;       
-    int binNs = 101;
-    
-    N = rawData.size();
-    
-    while (flagFuzz > 0) { 
-        vector <double> dx;
-        int k1;
-        int k2;
-        if (N == 2 * ((int) (N/2))) {
-            k1 = N/2;
-            k2 = k1 + 1;
-        } else {
-            k1 = (N-1)/2;
-            k2 = k1 + 2;
-            dx.push_back((rawData[k2] - rawData[k1]) / 2);
-        }
-        
-        for (int k = 0; k < k1; k++) {
-            dx.push_back(rawData[k+1] - rawData[k]);
-            
-        }
-        for (int k = k2; k < N; k++) {
-            dx.push_back(rawData[k] - rawData[k-1]);
-        }
-       
-        double ratio = *min_element(dx.begin(), dx.end()) / (*max_element(dx.begin(), dx.end()) + 1.0e-40);  
-        if (ratio > ratio_0/N) {                    
-            break;                  
-        } else {       
-            double dxMin;
-            ratio_0 = ratio_0/2;
-            countFuzz = countFuzz + 1;
-            double minNdx = (int) (((0.75 * binNs) - 1 ) + 0.5) ; 
-            vector <double> dxUnique = dx;
-            sort(dxUnique.begin(), dxUnique.end());
-            std::vector<double>::iterator it;
-            
-            it = unique(dxUnique.begin(), dxUnique.end());
-            dxUnique.resize(distance(dxUnique.begin(), it));
-            double nUnique = dxUnique.size();
-            double k = min(nUnique, minNdx);
-            if (k < 2) {
-                dxMin = 0.01 * (*max_element(rawData.begin(), rawData.end()) - *min_element(rawData.begin(), rawData.end()));
-                dxMin = max(dxMin, 1.0e-9);
-            } else { 
-                dxMin = 0.01 * accumulate(dxUnique.begin() + 1, dxUnique.begin() + k, 0.0) / (k - 1.0); 
-            }
-            dxMin = growthFactor * dxMin;
-            nScramble = 0;
-            for (int k = 1; k <= N; k++) {
-                if (dx[k] < dxMin) {
-                    rawData[k] = rawData[k] + dxMin * random();
-                    nScramble = nScramble + 1;
-                }
-            }                  
-            sort(rawData.begin(), rawData.end());
-            flagFuzz = flagFuzz - 1;
-            growthFactor = 2*growthFactor;
-        }    
-    }
-    WriteResults write;
-    write.writeColumn("Fuzzed_" + input.inputFile, rawData, rawData.size());
-}
-
-double InputData::random() {
-    double x1, x2, w, y1;   
-    if (useLast) {
-        y1 = y2;
-        useLast = false;
-    } else {
-        do {     
-            x1 = 2.0 * ranX() - 1;
-            x2 = 2.0 * ranX() - 1;
-            w = x1 * x1 + x2 * x2;
-        } while ( w >= 1.0 );
-
-        w = sqrt((-2.0 * log(w))/w);
-        y1 = x1 * w;
-        y2 = x2 * w;
-        useLast = true;
-    }
-    return(y1);
-}
-
 
 
   void InputData::identifyOutliers() {
@@ -245,15 +161,11 @@ double InputData::random() {
     
 
 
-void InputData::transformData() {                    
+bool InputData::transformData() {                    
     
     
     int nValues = rawData.size();     
-    
-    if (input.fuzz) {
-        fuzzData();
-    }
-        
+            
     for (vector<double>::iterator iter = rawData.begin(); iter != rawData.end(); ++iter) {
         if (*iter >= minimumCalc) {
             if (*iter <= maximumCalc) {
@@ -268,8 +180,8 @@ void InputData::transformData() {
         
     nValues = tempData.size(); 
     if (nValues == 0) {
-        out.print("CRITICAL ERROR:  no data!");
-        return;
+        out.error("No data within specified boundaries");
+        return false;
     }
     
     
@@ -282,6 +194,7 @@ void InputData::transformData() {
         transformedZeroOne[count] = (transformedData[count] + 1)/2.0;
         count++;    
     }
+    return true;
 }
 
 
@@ -370,11 +283,3 @@ void InputData::setAdaptiveDz() {
 }
     
     
-
-double InputData::ranX() {
-    double x;
-    seed=seed*1566083941 + 1;
-    x=seed*2.328306e-10 + 0.5;
-    
-    return x;
-}  

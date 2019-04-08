@@ -26,6 +26,9 @@ using namespace std;
 class InputParameters {
  
 public:     
+    
+    string debugOpt;
+    bool   debug;
    
     string inputPath;
     string inputFile;
@@ -71,6 +74,7 @@ public:
     double  decayFactor;
     int     loopMax;
     
+    
     float   symmetryPoint;
     bool    symmetry;
     
@@ -79,10 +83,11 @@ public:
     virtual ~InputParameters();
     bool userInput(int argc, char** argv);    
     
-private:
+    OutputControl out;
+    
+private:    
     void printUsage();
     
-    OutputControl out;
 };
 
 #endif	/* INPUTPARAMETERS_HPP */

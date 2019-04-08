@@ -25,7 +25,7 @@ Partition::~Partition() {
 
 vector <int> Partition::getIndices(int N, int p) {
     vector <int> indices;
-    indices.reserve(p);
+    indices.resize(p);
     if (N==p) {
         for (int i = 0; i < p; i++) {
             indices[i] = i;
@@ -46,15 +46,15 @@ vector <int> Partition::getIndices(int N, int p) {
 /*
 vector <int> Partition::getIndices(int N, int p) {
     vector <int> indices;
-    indices.reserve(p);
+    indices.resize(p);
     if (N==p) {
         for (int i = 0; i < p; i++) {
             indices[i] = i;
         }
     } else {
         indices[0] = 0;
-        int div = N/(p - 1);
-        int index = div - 1;
+        int div = (N - 1) / (p - 1);
+        int index = div;// - 1;
         for (int i = 1; i < p; i++) {
             indices[i] = index;
             index += div;
@@ -62,8 +62,8 @@ vector <int> Partition::getIndices(int N, int p) {
     }
     return indices;
 }
-
 */
+
 //vector <int>  Partition::calculateIndices (int totalSize, int subsetSize) {
 
 /*vector <int>  Partition::getIndices (int totalSize, int subsetSize) {

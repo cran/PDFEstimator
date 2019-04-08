@@ -23,20 +23,12 @@ WriteResults::WriteResults(const WriteResults& orig) {
 WriteResults::~WriteResults() {
 }
 
-void WriteResults::test(InputParameters *input, InputData *data, MinimizeScore *solution) {
-    
-}
 
 void WriteResults::writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, int trialNumber, Score *score, bool failed) {
-    
-    bool power = false;
-    
-    double max = data->maximumCalc;
-    double min = data->minimumCalc;      
-    double normFactor = 1;    
+        
+    createSolution(input, data, solution, score);
     
     ofstream outFile;
-    
     if (input->writeFile) {
         ostringstream solutionString; 
         solutionString << trialNumber;
@@ -72,7 +64,7 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
         if (failed) {
             outFile << "***** FAILED SOLUTION **********\n\n";
         }
-#ifdef debug
+#ifdef clock
         float time = solution->duration;
         outFile << "#   calculation time: " << time << " seconds\n";
         if (time >= 60) {
@@ -116,119 +108,42 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
         outFile << "# SCORES\n";                    
         outFile << "#\n";               
         outFile << "#   total score :         " << solution->bestScore << "\n";  
-        outFile << "#   penalty score:        " << score->getPenalty() << "\n";
+//        outFile << "#   penalty score:        " << score->getPenalty() << "\n";
         outFile << "#   likelihood score:     " << score->getLikelihood() << "\n";
         outFile << "#   SURD threshold:       " << score->getConfidence(score->getLikelihood()) << "%\n";
         outFile << "#\n";           
         outFile << "#\n";           
-            
-        outFile << "# LAGRANGE MULTIPLIERS (" << solution->mode - 1 << ")\n";            
-        outFile << "#\n";            
-        for (int j = 1; j < solution->mode; j++) {
-            outFile << "#   " << solution->bestLagrange[j] << "\n";                
-        }
-        outFile << "#\n";
-            
-        outFile << "# PLOT POINTS\n";            
-        outFile << "#\n";            
-        outFile << "#  x                     PDF(x)                     CDF(x) \n";              
+          
     }
     
-    double dzSize = data->nPoints;
-    double dzUniform = (max - min)*1.0/dzSize;
-    dzSize++;
-    double * dz;
-    dz = new double[(int) dzSize];
-    for (int i = 0; i < dzSize; i++) {
-        dz[i] = dzUniform;
-    }
+    
+    if ((input->writeFile) && (input->writeHeader)) {  
+        outFile << "# LAGRANGE MULTIPLIERS (" << solution->mode << ")\n";            
+        outFile << "#\n";            
+        for (int j = 0; j < solution->mode; j++) {
+            outFile << "#   " << L[j] << "\n";     
+        }
+        outFile << "#\n";            
+        outFile << "# PLOT POINTS\n";            
+        outFile << "#\n";            
+        outFile << "#  x                     PDF(x)                     CDF(x) \n";             
         
-    vector <double> termsT;;         
-    vector <double> termsP; 
-    double p = 0;
-    double termsSum = 0;     
-    double z = 0;
-    double q = min;
-    for (int k = 0; k < dzSize; k++) {
-        z = (2*q - max - min) / (max - min);   
-        if (fabs(z) > 1.00001) {
-            out.print("transformed value greater than 1: ", z);
-        }
-        termsT.clear();
-        termsT.push_back(1.0);
-        termsT.push_back(z);
-        p = solution->bestLagrange[0];
-        if (power) {
-            p = 1.0 / pow(q, solution->bestLagrange[1]); 
-        } else {
-            for (int t = 1; t < solution->mode; t++) {                
-                p += termsT[t] * solution->bestLagrange[t];
-                termsT.push_back(2*z*termsT[t] - termsT[t-1]);
-            }  
-            p = exp(p + solution->normalize);
-            p /= (max - min)/2;
-        }
-        termsP.push_back(p);
-        termsSum += p*dz[k];
-        q += dz[k];          
-    }    
-    termsSum /= normFactor;
-         
-    for (int k = 0; k < dzSize; k++) {
-        double pk = termsP[k]/termsSum;
-        termsP[k] = pk;
-        if (input->symmetry) {
-            termsP[k] = pk/2.0;
-        }
-    }        
-    vector <double> pdf;                      
-    vector <double> dzBig; 
-    termsSum = 0;
-    int count = 0;
-    if (input->symmetry) {
-        for (int k = (dzSize - 1); k > 0; k--) {                
-            termsSum += termsP[k]*dz[k];
-            CDF.push_back(termsSum);           
-            dzBig.push_back(dz[k]);
-            pdf.push_back(termsP[k]);      
-            count++;
-        }            
-    }
-    for (int k = 0; k < dzSize; k++) {                
-        termsSum += termsP[k]*dz[k];
-        CDF.push_back(termsSum);           
-        dzBig.push_back(dz[k]);
-        pdf.push_back(termsP[k]);       
-        count++;
-    }   
-               
-    q = min;   
-    if (input->symmetry) {
-        q = -max;
-    }
-    for (int k = 0; k < count; k++) {
+     }
+    
+    for (unsigned int k = 0; k < PDF.size(); k++) {
         if (input->writeFile) {
-            outFile << q << "   " <<  pdf[k] << "   " << CDF[k] << "\n";
-        }
-        x.push_back(q);
-        PDF.push_back(pdf[k]);
-        if (k < count) {
-            q += dzBig[k];
+            outFile << x[k] << "   " <<  PDF[k] << "   " << CDF[k] << "\n";
         }
     }
-    if (fabs(1.0 - CDF[count - 1]) > 0.01) {
-        out.print("ERROR: Normalization is incorrect by more than 1%: ", (CDF[count - 1]));
-    }
+    
     if (input->writeFile) {
         outFile.close();
     }
-    delete [] dz;
+    
 }
 
 
-
 void WriteResults::createSolution(InputParameters *input, InputData *data, MinimizeScore *solution, Score *score) {
-    
     bool power = false;
     
     double max = data->maximumCalc;
@@ -250,31 +165,41 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
     double termsSum = 0;     
     double z = 0;
     double q = min;
+    vector <double> lagrange = solution->getLagrange();
     for (int k = 0; k < dzSize; k++) {
         z = (2*q - max - min) / (max - min);   
        
         termsT.clear();
         termsT.push_back(1.0);
         termsT.push_back(z);
-        p = solution->bestLagrange[0];
+        
+        p = lagrange[0];
         if (power) {
-            p = 1.0 / pow(q, solution->bestLagrange[1]); 
+            p = 1.0 / pow(q, lagrange[1]); 
         } else {
             for (int t = 1; t < solution->mode; t++) {                
-                p += termsT[t] * solution->bestLagrange[t];
+                p += termsT[t] * lagrange[t];
                 termsT.push_back(2*z*termsT[t] - termsT[t-1]);
             }  
-            p = exp(p + solution->normalize);
+            p = exp(p);// + solution->normalize);
             p /= (max - min)/2;
         }
         termsP.push_back(p);
-        termsSum += p*dz[k];
+        termsSum += p * dz[k];
         q += dz[k];          
     }    
     termsSum /= normFactor;
+    
+    double lambdaZero =  -log(termsSum);//solution->normalize;//    
+    
+    L.push_back(lambdaZero);
+    for (int j = 1; j < solution->mode; j++) {   
+        L.push_back(lagrange[j]);
+        out.print("Lagrange   ", L[j]);
+    }
          
     for (int k = 0; k < dzSize; k++) {
-        double pk = termsP[k]/termsSum;
+        double pk = termsP[k] / termsSum;
         termsP[k] = pk;
         if (input->symmetry) {
             termsP[k] = pk/2.0;
@@ -300,7 +225,7 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
         pdf.push_back(termsP[k]);       
         count++;
     }   
-               
+                       
     q = min;   
     if (input->symmetry) {
         q = -max;
@@ -336,6 +261,15 @@ void WriteResults::writeColumn(string filename, vector <int> r, int length) {
 }
 
 void WriteResults::writeColumn(string filename, double r[], int length) {
+    ofstream outFile;
+    outFile.open(filename.c_str());
+    for (int i = 0; i < length; i++) {
+        outFile << r[i] <<  "\n";
+    }
+    outFile.close();
+}
+
+void WriteResults::writeColumn(string filename, int r[], int length) {
     ofstream outFile;
     outFile.open(filename.c_str());
     for (int i = 0; i < length; i++) {

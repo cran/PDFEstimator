@@ -7,7 +7,6 @@
 
 #include "R.h"
 #include "Rmath.h"
-//#include <R_ext/Rdynload.h>
 #include <vector>
 #include "InputParameters.h"
 #include "InputData.h"
@@ -15,10 +14,6 @@
 #include "MinimizeScore.h"
 #include "WriteResults.h"
 
-//#include "R_ext/Rdynload.h"
-
-//#include "Rinternals.h"
-//#include "Rdefines.h"
 
 #ifndef CALLPDF_HPP
 #define	CALLPDF_HPP
@@ -33,7 +28,6 @@ public:
     vector <double> Vcdf;
     vector <double> Vpdf;
     vector <double> Vx;
-    vector <double> lagrange; 
     vector <double> Vsqr;
     
     bool solutionFailed;

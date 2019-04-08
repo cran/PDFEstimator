@@ -19,6 +19,7 @@
 #include <math.h>
 #include <algorithm>
 #include <string.h>
+//#include <time.h> is this needed?
 
 #include "ChebyShev.h"
 #include "InputData.h"
@@ -26,7 +27,13 @@
 #include "Partition.h"
 #include "OutputControl.h"
 #include <limits>
+#include <climits>
 
+#ifdef outputR
+#include "Rmath.h"
+#endif
+
+//#define clock
 
 using namespace std;
 
@@ -44,11 +51,10 @@ public:
     float duration;
     double bestScore;
     double  normalize;
-    double * bestLagrange;
     double * trialRandom;
+    int     N;    
 private:
     int     nPoints;
-    int     N;    
     int maxLagrange;
     int seed;
     bool useLast;
@@ -60,6 +66,7 @@ private:
     double * doubleInverse;
     double * xUntransform;
     double * bestRandom;
+    double * bestLagrange;
     double * rawDataPartition;
     vector < vector < double > > T;
     
