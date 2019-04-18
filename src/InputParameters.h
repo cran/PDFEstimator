@@ -43,10 +43,7 @@ public:
     bool    writeSQR;
     string  qqFile;
     string  sqrFile;
-    
-    bool    boundaryPenalty;
-    string  penaltyOpt;
-    
+        
     float   lowerBound;
     float   upperBound;
     bool    lowerBoundSpecified;

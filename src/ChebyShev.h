@@ -23,7 +23,7 @@ public:
     ChebyShev();
     ChebyShev(const ChebyShev& orig);
     virtual ~ChebyShev();
-    void initialize(double dz[], int size);
+    void initialize(double dzLocal[], int sizeLocal);
     double * getTerms(unsigned mode);
     vector < vector < double > >  getAllTerms(unsigned mode);
     

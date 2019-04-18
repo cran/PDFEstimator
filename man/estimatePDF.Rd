@@ -23,12 +23,11 @@ A nonparametric density estimator based on the maximum-entropy method.  Accurate
 \references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PloS one 13(5): e0196937.}
 \author{Jenny Farmer, Donald Jacobs}
 \examples{
-#Estimates a normal distribution between -3 and 3
+#Estimates a normal distribution with 100 sample points using default parameters
 
 sampleSize = 1000
 sample = rnorm(sampleSize, 0, 1)
 dist = estimatePDF(sample)
-#, lowerBound = -3, upperBound = 3)
 plot(dist$x, dist$pdf)
 
 }

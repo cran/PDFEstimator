@@ -51,7 +51,7 @@ InputParameters::InputParameters() {
     fractionLagrangeAdd = 0.1;
     initSigma = 0.1;
     finalSigma = 0.001;
-    decayFactor = 2.0/sqrt(2);
+    decayFactor = sqrt(2.0);
     loopMax = 30;
     
     symmetryPoint = 0;

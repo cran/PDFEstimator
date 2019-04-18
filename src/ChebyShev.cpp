@@ -24,9 +24,9 @@ ChebyShev::ChebyShev(const ChebyShev& orig) {
 ChebyShev::~ChebyShev() {
 }
 
-void ChebyShev::initialize(double dz[], int size) {
-    this->size = size;
-    this->dz = dz;
+void ChebyShev::initialize(double dzLocal[], int sizeLocal) {
+    this->size = sizeLocal;
+    this->dz = dzLocal;
     vector <double> zeroT;
     vector <double> oneT;
     vector <double> twoT;
