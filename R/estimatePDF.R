@@ -1,5 +1,7 @@
-estimatePDF <- function(sample, pdfLength = NULL, lowerBound = NULL, upperBound = NULL) {
-	
+estimatePDF <- function(sample, pdfLength = NULL, lowerBound = NULL, 
+                        upperBound = NULL, lagrangeMin = 1, 
+                        lagrangeMax = 200, debug = 0, outlierCutoff = 7) {
+
 	inputLength = vector("numeric", 1)
 	inputLength [1] = length(sample)
 
@@ -35,19 +37,35 @@ estimatePDF <- function(sample, pdfLength = NULL, lowerBound = NULL, upperBound 
 
 	failedSolution = vector("numeric", 1)
 	failedSolution [1] = 0
+	
+	threshold = vector("numeric", 1)
+	threshold [1] = 0
 
+	sqrSize = vector("numeric", 1)
+	sqrSize [1] = 0
+	
 
-	distribution=.C("estimatePDF", 
+	distribution=.C(getNativeSymbolInfo("estimatePDF", "PDFEstimator"), 
 				sample = as.double(sample), 
 				inputLength = as.integer(inputLength), 
 				low = as.double(low), 	
 				high = as.double(high), 
 				isLow = as.integer(isLow), 
-				isHigh = as.integer(isHigh), 
+				isHigh = as.integer(isHigh),
+				lagrangeMin = as.integer(lagrangeMin),
+				lagrangeMax = as.integer(lagrangeMax),
+				debug = as.integer(debug),
+				outlierCutoff = as.integer(outlierCutoff),
 				outputLength = as.integer(outputLength),
-				failedSolution = as.integer(failedSolution), 
+				failedSolution = as.integer(failedSolution),
+				threshold = as.double(threshold),
 				x = as.double(vector("numeric", outputLength)), 
 				pdf = as.double(vector("numeric", outputLength)), 
 				cdf = as.double(vector("numeric", outputLength)),
-				sqr = as.double(vector("numeric", inputLength)))
+				sqr = as.double(vector("numeric", inputLength)),
+				sqrSize = as.double(sqrSize),
+				lagrange = as.double(vector("numeric", lagrangeMax)))
+	
+	      class(distribution) <- "PDFe"
+	      return(distribution)
 }

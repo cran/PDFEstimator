@@ -1,6 +1,6 @@
 /* 
  * PDF Estimator:  A non-parametric probability density estimation tool based on maximum entropy
- * File:   InputParameters.hpp
+ * File:   InputParameters.h
  * Copyright (C) 2018
  * Jenny Farmer jfarmer6@uncc.edu
  * Donald Jacobs djacobs1@uncc.edu
@@ -43,12 +43,14 @@ public:
     bool    writeSQR;
     string  qqFile;
     string  sqrFile;
+    bool    adaptive;
         
     float   lowerBound;
     float   upperBound;
     bool    lowerBoundSpecified;
     bool    upperBoundSpecified;
     
+    string  scoreType;
     double  SURDMinimum;
     double  SURDTarget;
     double  SURDMaximum;
@@ -61,9 +63,6 @@ public:
     int     minLagrange;
     int     nLagrangeAdd;
     double  outlierCutoff;    
-
-    bool    fuzz;
-    double  fuzzFactor;                                                     //not used yet
     
     double  fractionLagrangeAdd;
     double  initSigma;

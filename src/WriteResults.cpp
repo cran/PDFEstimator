@@ -1,6 +1,6 @@
 /* 
  * PDF Estimator:  A non-parametric probability density estimation tool based on maximum entropy
- * File:   WriteResults->cpp
+ * File:   WriteResults.cpp
  * Copyright (C) 2018
  * Jenny Farmer jfarmer6@uncc.edu
  * Donald Jacobs djacobs1@uncc.edu
@@ -107,9 +107,8 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
             
         outFile << "# SCORES\n";                    
         outFile << "#\n";               
-        outFile << "#   total score :         " << solution->bestScore << "\n";  
-//        outFile << "#   penalty score:        " << score->getPenalty() << "\n";
-        outFile << "#   likelihood score:     " << score->getLikelihood() << "\n";
+//        outFile << "#   variance :         " << solution->bestScore << "\n";  
+        outFile << "#   QZ score:     " << score->getLikelihood() << "\n";
         outFile << "#   SURD threshold:       " << score->getConfidence(score->getLikelihood()) << "%\n";
         outFile << "#\n";           
         outFile << "#\n";           
@@ -148,15 +147,27 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
     
     double max = data->maximumCalc;
     double min = data->minimumCalc;      
-    double normFactor = 1;   
-    
-    double dzSize = data->nPoints;
-    double dzUniform = (max - min)*1.0/dzSize;
-    dzSize++;
+    double normFactor = 1;      
+      
+    double dzSize;
     double * dz;
-    dz = new double[(int) dzSize];
-    for (int i = 0; i < dzSize; i++) {
-        dz[i] = dzUniform;
+    if (input->adaptive) {
+        double * dr;
+        dr = data->dz; 
+        double dzUniform = (max - min);
+        dzSize = (data->nPointsAdjust) * 2 - 2;
+        dz = new double[(int) dzSize];
+        for (int i = 0; i < dzSize; i++) {
+            dz[i] = dr[i] * dzUniform;
+        }
+    } else {      
+        dzSize = data->nPoints;     
+        double dzUniform = (max - min)*1.0/dzSize;     
+        dzSize++;    
+        dz = new double[(int) dzSize];      
+        for (int i = 0; i < dzSize; i++) {
+            dz[i] = dzUniform;
+        }
     }
         
     vector <double> termsT;;         
@@ -167,8 +178,7 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
     double q = min;
     vector <double> lagrange = solution->getLagrange();
     for (int k = 0; k < dzSize; k++) {
-        z = (2*q - max - min) / (max - min);   
-       
+        z = (2*q - max - min) / (max - min);           
         termsT.clear();
         termsT.push_back(1.0);
         termsT.push_back(z);
@@ -290,7 +300,7 @@ void WriteResults::writeQQ(string filename, double r[], int length, bool sqr) {
         double position = (i + 1) * 1.0 / (length + 1);
         if (sqr) {
             SQR.push_back(sqrt(length + 2) * (r[i] - position));
-            outFile << setprecision(12) << position << " " << SQR[i] <<  "\n";
+            outFile << setprecision(12) << r[i] << " " << position << " " << SQR[i] <<  "\n";
         } else {
             outFile << setprecision(12) << position << " " << r[i] <<  "\n";
         }

@@ -1,6 +1,6 @@
 /* 
  * PDF Estimator:  A non-parametric probability density estimation tool based on maximum entropy
- * File:   Partition.hpp
+ * File:   ScoreQZ.h
  * Copyright (C) 2018
  * Jenny Farmer jfarmer6@uncc.edu
  * Donald Jacobs djacobs1@uncc.edu
@@ -12,25 +12,29 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PARTITION_HPP
-#define	PARTITION_HPP
-#include <vector>
-#include <math.h>
-#include <iostream>
-#include <algorithm>
+#ifndef SCOREQZ_HPP
+#define	SCOREQZ_HPP
+
+#include "Score.h"
 
 using namespace std;
 
-class Partition {
+
+class ScoreQZ : public Score{
 public:
-    Partition();
-    Partition(const Partition& orig);
-    virtual ~Partition();
-    static vector <int> getIndices(int N, int p);
-    static vector <int> calculateIndices (int totalSize, int subsetSize);
+    ScoreQZ(double confidenceTarget, double confidenceMin, double confidenceMax); 
+    virtual ~ScoreQZ();
+    virtual vector <int> getIndices (int N, int p, double * data);
+    virtual vector <int> setIndices (int N, int p, double * data, bool index);
+    void setSigma(int N, int p);
+    double calculateScorePartition(double r[], int p);
+    double calculateScore(double r[], int N);
+    void getValues();   
 private:
-    static vector <int> getDataSubset(int lo, int hi, int size, vector <int> indices);
+    vector <double> sigma;
+    vector <double> mu;
+    
 };
 
-#endif	/* PARTITION_HPP */
+#endif	/* SCORE_HPP */
 

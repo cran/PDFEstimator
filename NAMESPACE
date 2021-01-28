@@ -1,3 +1,11 @@
 exportPattern("^[[:alpha:]]+")
 useDynLib(PDFEstimator, .registration = TRUE, .fixes = "C_")
 export(estimatePDF)
+export(plotBeta)
+export(getTarget)
+S3method(plot, PDFe)
+S3method(lines, PDFe)
+importFrom("grDevices", "gray.colors")
+importFrom("graphics", ".filled.contour", "axis", "legend", "par", "plot", "plot.default",  "lines.default", "symbols")
+importFrom("stats", "approx", "dbeta")
+

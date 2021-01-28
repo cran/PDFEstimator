@@ -28,10 +28,12 @@ InputParameters::InputParameters() {
     writeFailed = true;
     qqFile = "";
     sqrFile = "";
+    adaptive = true;
     
     lowerBoundSpecified = false;
     upperBoundSpecified = false;
     
+    scoreType = "QZ";
     SURDMinimum = 5;
     SURDTarget  = 40;
     SURDMaximum = 100;
@@ -44,21 +46,15 @@ InputParameters::InputParameters() {
     minLagrange = 1;
     nLagrangeAdd = 5;
     outlierCutoff = 7.0;    
-
-    fuzz = false;
-    fuzzFactor = 1;                                                     //not used yet
     
     fractionLagrangeAdd = 0.1;
     initSigma = 0.1;
-    finalSigma = 0.001;
+    finalSigma =0.001;
     decayFactor = sqrt(2.0);
-    loopMax = 30;
+    loopMax = 100;                  // updated from 30; September 2020
     
     symmetryPoint = 0;
-    symmetry = false;   
-    
-    
-}
+    symmetry = false;}
 
 InputParameters::InputParameters(const InputParameters& orig) {
 }
@@ -72,7 +68,7 @@ bool InputParameters::userInput(int argc, char**  argv){
     int c;
     bool inputEntered = false;
     
-    while ((c = getopt(argc, argv, "f:o:w:h:q:r:l:u:s:p:n:m:z:a:b:t:c:d:e:x:g:")) != -1)
+    while ((c = getopt(argc, argv, "f:o:w:h:q:r:l:u:s:p:n:m:z:a:b:t:c:d:e:x:g:v:")) != -1)
     switch (c){    
          case 'g':
             debugOpt = optarg;
@@ -139,7 +135,11 @@ bool InputParameters::userInput(int argc, char**  argv){
             upperBound = atof(optarg);
             out.print("upper bound = ", upperBound);
             upperBoundSpecified = true;
-            break;        
+            break;  
+        case 'v':
+            scoreType = optarg;
+            out.print("Scoring method:  " + scoreType);
+            break;       
         case 's':                                                               
             SURDTarget = atof(optarg);
             if (SURDTarget < 1) {
@@ -195,12 +195,7 @@ bool InputParameters::userInput(int argc, char**  argv){
         case 'm':                                                               
             minLagrange = atoi(optarg);
             out.print("minimum Lagrange = ", minLagrange);
-            break;        
-        case 'z': 
-            fuzzFactor = atof(optarg);
-            out.print("fuzz factor = ", fuzzFactor);
-            fuzz = true;
-            break; 
+            break;                
         default:
             out.print("Invalid parameter flag: ", c);
             printUsage();            

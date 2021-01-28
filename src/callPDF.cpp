@@ -16,8 +16,14 @@ callPDF::callPDF(const callPDF& orig) {
 callPDF::~callPDF() {
 }
 
-void callPDF::makeCall(int sampleLength, double * sampleData, double low, double high, int isLow, int isHigh, int points) {
+void callPDF::makeCall(int sampleLength, double * sampleData, double low, double high, int isLow, int isHigh, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug) {
     InputParameters *input = new InputParameters;
+    out.debug = debug;
+    input->out.debug = debug;    
+    input->outlierCutoff = outlierCutoff;
+    input->minLagrange = lagrangeMin;
+    input->maxLagrange = lagrangeMax;
+    input->adaptive = false;
     if (isLow) {
         input->lowerBoundSpecified = true;
         input->lowerBound = low;
@@ -33,9 +39,11 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
     
     input->integrationPoints = points - 1;
    
-    Score *score = new Score(input->SURDTarget, input->SURDMinimum, input->SURDMaximum);    
+    ScoreQZ *score = new ScoreQZ(input->SURDTarget, input->SURDMinimum, input->SURDMaximum);    
     MinimizeScore *minimumPDF = new MinimizeScore();
+    minimumPDF->out.debug = debug;
     InputData *data = new InputData(*input);  
+    data->out.debug = debug;
     vector <double> inputData;
     for (int i = 0; i < sampleLength; i++) {
         inputData.push_back(sampleData[i]);
@@ -43,18 +51,22 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
     input->writeHeader = false;
     input->writeFile = false;
     data->setData(inputData);     
-    if (data->processData()) {        
+    if (data->processData()) {             
+        WriteResults write;       
+        write.out.debug = debug;
         solutionFailed = minimumPDF->minimize(input, *data, *score);
-        WriteResults write;        
+        solutionThreshold = minimumPDF->bestThreshold;
         write.createSolution(input, data, minimumPDF, score);  
-
-        if (!solutionFailed) {
-            write.createQQ(minimumPDF->trialRandom, data->N);   
+        this->N = data->N;
+        
+//        if (!solutionFailed) {
+            write.createQQ(minimumPDF->bestRandom, data->N);   
             Vsqr = write.SQR;
-        }
-        Vcdf = write.CDF;
-        Vpdf = write.PDF;
-        Vx   = write.x;     
+            Vcdf = write.CDF;
+            Vpdf = write.PDF;
+            Vx   = write.x;
+            Vlagrange = write.L;
+//        } 
         delete data;
         delete score;
         delete minimumPDF;
@@ -63,5 +75,6 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
     }
     
     delete input;
+     
 }
 

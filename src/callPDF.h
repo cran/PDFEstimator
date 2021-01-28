@@ -10,7 +10,7 @@
 #include <vector>
 #include "InputParameters.h"
 #include "InputData.h"
-#include "Score.h"
+#include "ScoreQZ.h"
 #include "MinimizeScore.h"
 #include "WriteResults.h"
 
@@ -23,17 +23,22 @@ public:
     callPDF();
     callPDF(const callPDF& orig);
     virtual ~callPDF();
-    void makeCall(int sampleLength, double * sampleData, double low, double high, int isLow, int isHigh, int points);
+    void makeCall(int sampleLength, double * sampleData, double low, double high, int isLow, int isHigh, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug);
     
     vector <double> Vcdf;
     vector <double> Vpdf;
     vector <double> Vx;
     vector <double> Vsqr;
+    vector <double> Vlagrange;
+    
+    double N;
     
     bool solutionFailed;
+    
+    double solutionThreshold;
         
 private:
-
+    OutputControl out;
 };
 
 #endif	/* CALLPDF_HPP */
