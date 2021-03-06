@@ -1,7 +1,7 @@
 plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE, 
-                      plotShading = FALSE, showOutlierPercent = 0, 
-                      outlierColor = "red3", sqrColor = "steelblue4", 
-                      type="l", lwd = 2, ...){
+                      plotShading = FALSE, shadeResolution = 100, 
+                      showOutlierPercent = 0, outlierColor = "red3", 
+                      sqrColor = "steelblue4", type="l", lwd = 2, ...){
   estimate = x
   x = estimate$x
   pdf = estimate$pdf
@@ -22,9 +22,9 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
     if (plotPDF) {
       y = sort(sample)
       y = y[y >= min(x) & y <= max(x)]
-      plotBeta(y, xPlotRange = range(x))
+      plotBeta(y, xPlotRange = range(x), resolution = shadeResolution)
     } else {
-      plotBeta(mean, xPlotRange = range(mean))
+      plotBeta(mean, xPlotRange = range(mean), resolution = shadeResolution)
     }
     par(new = TRUE)
   }
@@ -32,14 +32,20 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
   if (plotSQR && plotPDF) {
     xMin = max(min(x), min(sample))
     xMax = min(max(x), max(sample))
-    y = seq(xMin, xMax, length.out = length(sqr))
-    plot(y, sqr, type = "l", ylim = c(-2, 2), xlim = range(x), axes = FALSE, col = sqrColor, xlab ="", ylab = "")
-    axis(4, ylim = c(-2, 2), ylab = "sqr", col = sqrColor, col.ticks = sqrColor, col.axis = sqrColor)
-    par(new = TRUE)
-    if (showOutlierPercent) {
-      if (nOutside > 0) {
-        symbols(y[iOutside], sqr[iOutside], add = TRUE, circles = rep(0.01, length(iOutside)), bg = outlierColor, fg = outlierColor, inches = 0.01, xlab ="", ylab = "", ylim = c(-2, 2), xlim = c(0, 1))
-        par(new = TRUE)
+    y = sort(sample)
+    if (length(sample) > length(sqr)) {
+      inRange = which((y > min(x)) & (y < max(x)))
+      y = y[inRange]
+    }
+    if (length(sample) == length(sqr)) {
+      plot(y, sqr, type = "l", ylim = c(-2, 2), xlim = range(x), axes = FALSE, col = sqrColor, xlab ="", ylab = "")
+      axis(4, ylim = c(-2, 2), ylab = "sqr", col = sqrColor, col.ticks = sqrColor, col.axis = sqrColor)
+      par(new = TRUE)
+      if (showOutlierPercent) {
+        if (nOutside > 0) {
+          symbols(y[iOutside], sqr[iOutside], add = TRUE, circles = rep(0.01, length(iOutside)), bg = outlierColor, fg = outlierColor, inches = 0.01, xlab ="", ylab = "", ylim = c(-2, 2), xlim = c(0, 1))
+          par(new = TRUE)
+        }
       }
     }
   }

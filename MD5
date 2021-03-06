@@ -1,14 +1,14 @@
-a9f60efb4e31f87a1d8b6118f9c9a5a3 *DESCRIPTION
+00d69f3aee98f159b2f11e2d6b9b8d9f *DESCRIPTION
 cbb4097e6356735d2647cfb39be52e9b *NAMESPACE
 c01ade484c148c0a8f55b09e475d0e55 *R/estimatePDF.R
 871e108f6732e641055ea0669c2a25da *R/getTarget.R
 97e5691b17b358f91fb1f1785c5020f6 *R/lines.R
-154ffa595d7700c948de77a4332cce99 *R/plot.R
+0952080fef53ac9b09d90956558e1e49 *R/plot.R
 aed081c70f94a56daabab60adc6f8d46 *R/plotBeta.R
 44ea47cbf55b332b1ded57086a05ae4e *man/estimatePDF.Rd
 49f22b4117dfb643ec4a77fc1983f619 *man/getTarget.Rd
 532a0a464c8257d46cfc4228dc6856b8 *man/lines.Rd
-8e98eee6ada75fd48b66113e95922adb *man/plot.Rd
+610ffad88ad23c9dcfbe5e29558df0fc *man/plot.Rd
 2503c92d92eb98f45e680d21bfbba0b0 *man/plotBeta.Rd
 8b81f546175f8b6a13591ab627df9d53 *src/ChebyShev.cpp
 b4ed50fe984075cd4f74f77cdd68afad *src/ChebyShev.h
