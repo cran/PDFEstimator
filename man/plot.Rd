@@ -6,7 +6,7 @@
 \usage{
   \method{plot}{PDFe}(x, plotPDF = TRUE, plotSQR = FALSE,
   plotShading = FALSE, shadeResolution = 100, 
-  showOutlierPercent = 0, outlierColor = "red3", 
+  showOutlierPercent = 0, outlierColor = "red3", sqrPlotThreshold = 2, 
   sqrColor = "steelblue4", type="l", lwd = 2, ...)}
 \arguments{
 	\item{x}{an "estimatePDF" object}	
@@ -16,6 +16,7 @@
 	\item{shadeResolution}{the number of sample points plotted in the background if plotShading = TRUE. Increasing resolution will provide sharper contours and take longer to plot.}
 	\item{showOutlierPercent}{specify confidence threshold for outliers}
 	\item{outlierColor}{color for outliers positions outside of threshold defined in showOutlierPercent}
+  \item{sqrPlotThreshold}{magnitude of ylim above and below zero for SQR plot}
 	\item{sqrColor}{color for sqr plot for positions within the threshold defined in showOutlierPercentage}
 	\item{type}{plot type for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this type}
 	\item{lwd}{line width for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this line width}

@@ -2,11 +2,12 @@
 \alias{plotBeta}
 \title{Plot Diagnostic Shading}
 \description{Plot background shading for density estimation based on the beta distribution for sort order statistics}
-\usage{plotBeta(samples, resolution = 100, xPlotRange)}
+\usage{plotBeta(samples, resolution = 100, xPlotRange, sqrPlotThreshold = 2)}
 \arguments{
   \item{samples}{a data sample for estimation}
   \item{resolution}{the number of sample points plotted in the contour}
   \item{xPlotRange}{the x-axis range for plotting}
+  \item{sqrPlotThreshold}{magnitude of ylim above and below zero}
 }
 \details{plotBeta is intended for use with the plot method in the PDFEstimator package for plotting PDFe density estimation objects.
 }

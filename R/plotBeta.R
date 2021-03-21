@@ -1,4 +1,4 @@
-plotBeta <- function (samples, resolution = 100, xPlotRange) {
+plotBeta <- function (samples, resolution = 100, xPlotRange, sqrPlotThreshold = 2) {
  
 nMax = resolution
 samples = sort(unique(samples))
@@ -16,8 +16,6 @@ if (n > nMax) {
   }
   n = length(samples)
 }
-  
-sqrPlotThreshold = 2
 
 inc = 1 / (n - 1)
 range = seq(0, 1, inc)
