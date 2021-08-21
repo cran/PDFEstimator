@@ -47,7 +47,7 @@ public:
     int nLeftOutliers;
     int nPointsAdjust;
     ChebyShev cheby;
-    
+        
     InputData(const InputParameters& input);
     InputData(const InputData& orig);
     bool readData();

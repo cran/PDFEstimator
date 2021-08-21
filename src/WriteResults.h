@@ -51,6 +51,7 @@ public:
     vector <double> CDF;   
     vector <double> SQR;
     vector <double> L;
+    vector <double> R;
     
     OutputControl out;
 

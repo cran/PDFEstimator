@@ -143,14 +143,23 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
 
 
 void WriteResults::createSolution(InputParameters *input, InputData *data, MinimizeScore *solution, Score *score) {
-    bool power = false;
-    
+       
     double max = data->maximumCalc;
-    double min = data->minimumCalc;      
-    double normFactor = 1;      
+    double min = data->minimumCalc;  
       
     double dzSize;
     double * dz;
+    double * dzPoint;
+    int nSize = input->estimatedPoints.size();
+    dzPoint = new double[(int) nSize];
+    if (input->estimatePoints) {        
+        dzPoint[0] = (input->estimatedPoints[0] - min);// * (max - min);
+        dzPoint[nSize - 1] = (max - input->estimatedPoints[nSize - 1]);// * (max - min);
+        for (int k = 1; k < (nSize - 1); k++) {
+            dzPoint[k] = input->estimatedPoints[k + 1] - input->estimatedPoints[k];
+//            dzPoint[k] *= (max - min);
+        }
+    } 
     if (input->adaptive) {
         double * dr;
         dr = data->dz; 
@@ -162,13 +171,14 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
         }
     } else {      
         dzSize = data->nPoints;     
-        double dzUniform = (max - min)*1.0/dzSize;     
+        double dzUniform = (max - min) * 1.0/dzSize;     
         dzSize++;    
         dz = new double[(int) dzSize];      
         for (int i = 0; i < dzSize; i++) {
             dz[i] = dzUniform;
         }
     }
+    
         
     vector <double> termsT;;         
     vector <double> termsP; 
@@ -181,72 +191,96 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
         z = (2*q - max - min) / (max - min);           
         termsT.clear();
         termsT.push_back(1.0);
-        termsT.push_back(z);
-        
-        p = lagrange[0];
-        if (power) {
-            p = 1.0 / pow(q, lagrange[1]); 
-        } else {
-            for (int t = 1; t < solution->mode; t++) {                
-                p += termsT[t] * lagrange[t];
-                termsT.push_back(2*z*termsT[t] - termsT[t-1]);
-            }  
-            p = exp(p);// + solution->normalize);
-            p /= (max - min)/2;
-        }
+        termsT.push_back(z);        
+        p = lagrange[0];        
+        for (int t = 1; t < solution->mode; t++) {                
+            p += termsT[t] * lagrange[t];
+            termsT.push_back(2 * z * termsT[t] - termsT[t-1]);
+        }  
+        p = exp(p);
+        p /= (max - min)/2;        
         termsP.push_back(p);
         termsSum += p * dz[k];
         q += dz[k];          
     }    
-    termsSum /= normFactor;
-    
-    double lambdaZero =  -log(termsSum);//solution->normalize;//    
+    double lambdaZero =  -log(termsSum);
     
     L.push_back(lambdaZero);
     for (int j = 1; j < solution->mode; j++) {   
         L.push_back(lagrange[j]);
         out.print("Lagrange   ", L[j]);
     }
-         
-    for (int k = 0; k < dzSize; k++) {
-        double pk = termsP[k] / termsSum;
-        termsP[k] = pk;
-        if (input->symmetry) {
-            termsP[k] = pk/2.0;
+    
+    
+    if (input->estimatePoints) {        
+        int nEstimate = input->estimatedPoints.size();
+        double sumP = 0;
+        for (int k = 0; k < nEstimate; k++) {
+            q = input->estimatedPoints[k];
+            if ((q < min) || (q > max)) {
+                p = 0;
+            } else {
+                z = (2*q - max - min) / (max - min);    
+                termsT.clear();
+                termsT.push_back(1.0);
+                termsT.push_back(z);        
+                p = lagrange[0];
+                for (int t = 1; t < solution->mode; t++) {                
+                    p += termsT[t] * lagrange[t];
+                    termsT.push_back(2 * z * termsT[t] - termsT[t-1]);
+                }  
+                p = exp(p);
+                p /= (max - min)/2;   
+                p /= termsSum;
+            }
+            sumP += p * dzPoint[k];
+            x.push_back(q);
+            PDF.push_back(p);
+            CDF.push_back(sumP);
         }
-    }        
-    vector <double> pdf;                      
-    vector <double> dzBig; 
-    termsSum = 0;
-    int count = 0;
-    if (input->symmetry) {
-        for (int k = (dzSize - 1); k > 0; k--) {                
-            termsSum += termsP[k]*dz[k];
+    } else {  
+         
+        for (int k = 0; k < dzSize; k++) {
+            double pk = termsP[k] / termsSum;
+            termsP[k] = pk;
+            if (input->symmetry) {
+                termsP[k] = pk/2.0;
+            }
+        }        
+        vector <double> pdf;                      
+        vector <double> dzBig; 
+        termsSum = 0;
+        int count = 0;
+        if (input->symmetry) {
+            for (int k = (dzSize - 1); k > 0; k--) {                
+                termsSum += termsP[k] * dz[k];
+                CDF.push_back(termsSum);           
+                dzBig.push_back(dz[k]);
+                pdf.push_back(termsP[k]);      
+                count++;
+            }            
+        }
+        for (int k = 0; k < dzSize; k++) {                
+            termsSum += termsP[k] * dz[k];
             CDF.push_back(termsSum);           
             dzBig.push_back(dz[k]);
-            pdf.push_back(termsP[k]);      
+            pdf.push_back(termsP[k]);       
             count++;
-        }            
-    }
-    for (int k = 0; k < dzSize; k++) {                
-        termsSum += termsP[k]*dz[k];
-        CDF.push_back(termsSum);           
-        dzBig.push_back(dz[k]);
-        pdf.push_back(termsP[k]);       
-        count++;
-    }   
-                       
-    q = min;   
-    if (input->symmetry) {
-        q = -max;
-    }
-    for (int k = 0; k < count; k++) {
-        x.push_back(q);
-        PDF.push_back(pdf[k]);
-        if (k < count) {
-            q += dzBig[k];
+        }    
+    
+        q = min;   
+        if (input->symmetry) {
+            q = -max;
         }
-    }    
+        for (int k = 0; k < count; k++) {
+            x.push_back(q);
+            PDF.push_back(pdf[k]);
+            if (k < count) {
+                q += dzBig[k];
+            }
+        }    
+    }
+    
     delete [] dz;
 }
 

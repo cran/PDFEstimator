@@ -20,6 +20,8 @@
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
+#include <algorithm>
+#include <vector>
 #include "OutputControl.h"
 using namespace std;
 
@@ -70,6 +72,9 @@ public:
     double  decayFactor;
     int     loopMax;
     
+    void setEstimationPoints(vector <double> x);    
+    vector <double> estimatedPoints;
+    bool estimatePoints;
     
     float   symmetryPoint;
     bool    symmetry;

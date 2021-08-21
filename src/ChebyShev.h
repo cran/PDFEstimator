@@ -1,6 +1,6 @@
 /*  
  * PDF Estimator:  A non-parametric probability density estimation tool based on maximum entropy
- * File:   ChebyShev.hpp
+ * File:   ChebyShev.h
  * Copyright (C) 2018
  * Jenny Farmer jfarmer6@uncc.edu
  * Donald Jacobs djacobs1@uncc.edu

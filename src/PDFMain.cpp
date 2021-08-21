@@ -3,18 +3,19 @@
 #include "callPDF.h"
 
 extern "C" { 
-    void estimatePDF(double *sampleData, int *sampleLength, 
-                     double *low, double *high, int *isLow, int *isHigh, 
+    void estimatePDF(double *sampleData, int *sampleLength, double *estimationPoints, int *estimationLength, int *isSpecifyPoints,
+                     double *low, double *high, int *isLow, int *isHigh, double * target,
                      int *lagrangeMin, int *lagrangeMax, int *debug, int *outlierCutoff,
-                     int *points, int *fail, double *threshold, double *x, double *pdf, double *cdf, double *sqr, double *sqrSize, double *lagrange){    
+                     int *points, int *fail, double *threshold, double *x, double *pdf, double *cdf, double *sqr, double *sqrSize, double *lagrange, double *r){    
         callPDF pd;
-        pd.makeCall(sampleLength[0], sampleData, low[0], high[0], isLow[0], isHigh[0], points[0], lagrangeMin[0], lagrangeMax[0], outlierCutoff[0], debug[0]);
+        pd.makeCall(sampleData, sampleLength[0], estimationPoints, estimationLength[0], isSpecifyPoints[0], low[0], high[0], isLow[0], isHigh[0], target[0], points[0], lagrangeMin[0], lagrangeMax[0], outlierCutoff[0], debug[0]);
         
         vector <double> Vx = pd.Vx;
         vector <double> Vpdf = pd.Vpdf;
         vector <double> Vcdf = pd.Vcdf;      
         vector <double> Vsqr = pd.Vsqr;  
         vector <double> Vlagrange = pd.Vlagrange;
+        vector <double> Vr = pd.Vr;
         
         sqrSize[0] = pd.N;
         
@@ -33,17 +34,14 @@ extern "C" {
         }
         for (unsigned i = 0; i < Vsqr.size(); i++) {
             sqr[i] = Vsqr[i];
+        } 
+        for (unsigned i = 0; i < Vr.size(); i++) {
+            r[i] = Vr[i];
         }    
 
-//        int resizeLagrange = pd.Vlagrange.size();
-//        double * newLagrange = new double[resizeLagrange];
-//        delete lagrange;
-//        lagrange = new double[resizeLagrange];
-//        for (int i = 0; i < resizeLagrange; i++) {
         for (unsigned i = 0; i < Vlagrange.size(); i++) {
             lagrange[i] = Vlagrange[i];
         }            
-//        lagrange = newLagrange;
         return;    
     }   
 } 

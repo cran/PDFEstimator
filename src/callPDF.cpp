@@ -16,14 +16,23 @@ callPDF::callPDF(const callPDF& orig) {
 callPDF::~callPDF() {
 }
 
-void callPDF::makeCall(int sampleLength, double * sampleData, double low, double high, int isLow, int isHigh, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug) {
+void callPDF::makeCall(double * sampleData, int sampleLength, double * estimationPoints, int estimationLength, int isSpecifyPoints, double low, double high, int isLow, int isHigh, double target, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug) {
     InputParameters *input = new InputParameters;
     out.debug = debug;
     input->out.debug = debug;    
     input->outlierCutoff = outlierCutoff;
     input->minLagrange = lagrangeMin;
     input->maxLagrange = lagrangeMax;
+    input->SURDTarget = target;
     input->adaptive = false;
+    if (isSpecifyPoints) {
+        input->estimatePoints = true;
+        vector <double> estimationData;
+        for (int i = 0; i < estimationLength; i++) {
+            estimationData.push_back(estimationPoints[i]);
+        }
+        input->setEstimationPoints(estimationData);
+    }
     if (isLow) {
         input->lowerBoundSpecified = true;
         input->lowerBound = low;
@@ -66,6 +75,7 @@ void callPDF::makeCall(int sampleLength, double * sampleData, double low, double
             Vpdf = write.PDF;
             Vx   = write.x;
             Vlagrange = write.L;
+            Vr = write.R;
 //        } 
         delete data;
         delete score;

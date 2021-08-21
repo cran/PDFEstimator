@@ -91,6 +91,7 @@ bool InputData::processData() {
     }
     
     sort(rawData.begin(), rawData.end());
+//    double temp = min(fabs(rawData));
     minimumRaw = rawData[0];
     maximumRaw = rawData[rawData.size() - 1];
     if (minimumRaw == maximumRaw) {        

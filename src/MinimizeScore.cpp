@@ -141,9 +141,9 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     
     vector <int> indices;
     double globalScore = score.calculateScore(transformedZeroOne, N);
-    out.print("initial score", globalScore);   
+    out.print("initial global score", globalScore);   
     
-    if ((globalScore > minimumScore) && (globalScore < maximumScore)) { 
+/*    if ((globalScore > targetScore) && (globalScore < maximumScore)) { 
         out.print("*Uniform Solution");
         bestThreshold = score.getConfidence(globalScore);
         for (int c = 0; c < N; c++) {
@@ -166,8 +166,8 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
         }
         
         return 0;       
-    }      
-        
+    }              
+  */  
     
     indices = score.getIndices(N, partitionSize, transformedZeroOne); 
     partitionSize = indices.size();

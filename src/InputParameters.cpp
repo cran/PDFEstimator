@@ -28,14 +28,14 @@ InputParameters::InputParameters() {
     writeFailed = true;
     qqFile = "";
     sqrFile = "";
-    adaptive = true;
+    adaptive = false;
     
     lowerBoundSpecified = false;
     upperBoundSpecified = false;
     
     scoreType = "QZ";
     SURDMinimum = 5;
-    SURDTarget  = 40;
+    SURDTarget  = 70;
     SURDMaximum = 100;
     initPartitionSize = 1025;
     startSolutionNumber = 0;
@@ -53,6 +53,8 @@ InputParameters::InputParameters() {
     decayFactor = sqrt(2.0);
     loopMax = 100;                  // updated from 30; September 2020
     
+    estimatePoints = false;
+    
     symmetryPoint = 0;
     symmetry = false;}
 
@@ -62,6 +64,13 @@ InputParameters::InputParameters(const InputParameters& orig) {
 InputParameters::~InputParameters() {
 }
 
+
+void InputParameters::setEstimationPoints(vector<double> x) {
+    estimatedPoints.resize(x.size());
+    sort(x.begin(), x.end());
+    estimatedPoints =  x;
+    estimatePoints = true;
+}
 
 bool InputParameters::userInput(int argc, char**  argv){
     
