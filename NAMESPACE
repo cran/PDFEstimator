@@ -1,6 +1,8 @@
 useDynLib(PDFEstimator, .registration = TRUE, .fixes = "C_")
 export(estimatePDF)
 export(convertToPDFe)
+export(plotBeta)
+export(getTarget)
 S3method(plot, PDFe)
 S3method(lines, PDFe)
 S3method(print, PDFe)

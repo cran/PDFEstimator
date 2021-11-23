@@ -31,8 +31,8 @@ getTarget <- function (Ns, target) {
   duRelative = matrix(0, 1, nipMAX);
   duRelative[1:1000] = du1000;
   duRelative[1001:kStart] = duRelative0[nipW:1];
-  duRelative[kStart + 1:nipMAX - 1000] = duRelative0;
-  duRelative[kStart + 1 + nipW:nipMAX] = du1000;
+  duRelative[(kStart + 1):(nipMAX - 1000)] = duRelative0;
+  duRelative[(kStart + 1 + nipW):nipMAX] = du1000;
   bd0 = matrix(0, 1, nipMAX);                         # => beta distribution: CDF
   bd1 = matrix(0, 1, nipMAX);                  # => beta distribution: CDF' = PDF
   bd2 = matrix(0, 1, nipMAX);                # => beta distribution: CDF'' = PDF'

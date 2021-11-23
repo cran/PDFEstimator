@@ -2,7 +2,7 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
                       plotShading = FALSE, shadeResolution = 100, 
                       showOutlierPercent = 0, outlierColor = "red3",
                       sqrPlotThreshold = 2, sqrColor = "steelblue4", 
-                      type="l", lwd = 2, ...){
+                      type="l", lwd = 2, xlab = "x", ylab = "PDF", ...){
   estimate = x
   x = estimate$x
   pdf = estimate$pdf
@@ -41,7 +41,7 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
     }
     if (length(y) == length(sqr)) {
       plot(y, sqr, type = "l", ylim = sqrRange, xlim = range(x), axes = FALSE, col = sqrColor, xlab ="", ylab = "")
-      axis(4, ylim = sqrRange, ylab = "sqr", col = sqrColor, col.ticks = sqrColor, col.axis = sqrColor)
+      axis(4, ylim = sqrRange, ylab = "SQR", col = sqrColor, col.ticks = sqrColor, col.axis = sqrColor)
       par(new = TRUE)
       if (showOutlierPercent) {
         if (nOutside > 0) {
@@ -53,7 +53,19 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
   }
   
   if (plotSQR && !plotPDF) {
-    plot(mean, sqr, ylim = sqrRange, type = type, lwd = lwd, col = sqrColor, ...)
+    if (missing(xlab)) {
+      if (missing(ylab)) {
+        plot(mean, sqr, xlab = "order fraction", ylab = "SQR", ylim = sqrRange, type = type, lwd = lwd, col = sqrColor, ...)
+      } else {
+        plot(mean, sqr, xlab = "order fraction", ylim = sqrRange, type = type, lwd = lwd, col = sqrColor, ...)
+      }
+    } else {
+      if (missing(ylab)) {
+        plot(mean, sqr, ylab = "SQR", ylim = sqrRange, type = type, lwd = lwd, col = sqrColor, ...)
+      } else {
+        plot(mean, sqr, ylim = sqrRange, type = type, lwd = lwd, col = sqrColor, ...)
+      }
+    }
     par(new = TRUE)
     if (showOutlierPercent) {
       plot(mean, targets[ , 1], type = "l", lty = 2, ylim = sqrRange, xlab = "", ylab = "")
@@ -71,7 +83,7 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
   }
   
   if (plotPDF) {
-    plot.default(x, pdf, type = type, lwd = lwd, ...)
+    plot.default(x, pdf, type = type, lwd = lwd, xlab = xlab, ylab = ylab, ...)
     if (!plotSQR && showOutlierPercent) {
       if (nOutside > 0) {
         xMin = max(min(x), min(sample))

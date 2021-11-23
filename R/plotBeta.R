@@ -65,10 +65,8 @@ zRotate[which(is.na(zRotate))] = 0
 
 zlim = range(z, finite = TRUE)
 nlevels = 50
-customGrays = 
-  c("#FFFFFF","#EFEFEF","#EDEDED","#EDEDED","#ECECEC","#EBEBEB","#EAEAEA","#E9E9E9","#E8E8E8","#E7E7E7","#E7E7E7", 
-    rev(gray.colors(100))[1:50])
-     plot(NA, xlim = xPlotRange, axes = FALSE,
+customGrays = gray.colors(100, end = 1, rev = TRUE)
+plot(NA, xlim = xPlotRange, axes = FALSE, 
      ylim = c(-sqrPlotThreshold, sqrPlotThreshold), 
      xlab="", ylab="")
 .filled.contour(x=x, y=transformY, z=zRotate, 

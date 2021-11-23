@@ -7,7 +7,7 @@
   \method{plot}{PDFe}(x, plotPDF = TRUE, plotSQR = FALSE,
   plotShading = FALSE, shadeResolution = 100, 
   showOutlierPercent = 0, outlierColor = "red3", sqrPlotThreshold = 2, 
-  sqrColor = "steelblue4", type="l", lwd = 2, ...)}
+  sqrColor = "steelblue4", type="l", lwd = 2, xlab = "x", ylab = "PDF", ...)}
 \arguments{
 	\item{x}{an "estimatePDF" object}	
 	\item{plotPDF}{plot the probability density function}
@@ -20,6 +20,8 @@
 	\item{sqrColor}{color for sqr plot for positions within the threshold defined in showOutlierPercentage}
 	\item{type}{plot type for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this type}
 	\item{lwd}{line width for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this line width}
+	\item{xlab}{x-axis label for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this label}
+	\item{ylab}{y-axis label for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this label}
 	\item{...}{further plotting parameters}
 }
 \value{
