@@ -13,14 +13,9 @@
 	\item{lwd}{line width for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this line width}
 	\item{...}{further plotting parameters}
 }
-\value{
-	\item{}{None}
-}
-\references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PloS one 13(5): e0196937.}
+\references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.}
 \author{Jenny Farmer, Donald Jacobs}
 \examples{
-
 plot(estimatePDF(rnorm(1000, 0, 1)))
 lines(estimatePDF(rnorm(1000, 0, 1)), col = "gray")
-
 }

@@ -64,7 +64,8 @@ public:
     int     maxLagrange;
     int     minLagrange;
     int     nLagrangeAdd;
-    double  outlierCutoff;    
+    double  outlierCutoff;
+    bool    smooth;
     
     double  fractionLagrangeAdd;
     double  initSigma;

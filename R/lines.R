@@ -1,5 +1,12 @@
 lines.PDFe <- function(x, showOutlierPercent = 0, 
                       outlierColor = "red3", lwd = 2, ...){
+  
+  if (!is.numeric(showOutlierPercent) || 
+      showOutlierPercent < 0 || showOutlierPercent >= 100) {
+    stop("showOutlierPercent must be greater than 0 and less than 100")
+  }
+  
+  
   estimate = x
   x = estimate$x
   pdf = estimate$pdf

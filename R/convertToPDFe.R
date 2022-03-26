@@ -1,5 +1,17 @@
 convertToPDFe <- function(sample, x, pdf) {
   
+  if (!is.numeric(sample)) {
+    stop("a numeric vector of sample data is required")
+  }
+  
+  if (!is.numeric(x)) {
+    stop("a numeric vector of x values is required")
+  }
+  
+  if (!is.numeric(pdf)) {
+    stop("a numeric vector of pdf values is required")
+  }
+  
   if (min(sample) < min(x)) {
     x = c(min(sample), x)
     pdf = c(0, pdf)
@@ -41,7 +53,8 @@ convertToPDFe <- function(sample, x, pdf) {
   
   estimatePDFe = list(x = x, pdf = pdf, sample = sample, 
                       sqrSize = sqrSize, sqr = sqr, cdf = cdf, 
-                      threshold = threshold, failedSolution = failedSolution)
+                      threshold = threshold, failedSolution = failedSolution,
+                      isSpecifyPoints = FALSE, outputLength = length(x))
   class(estimatePDFe) <- "PDFe"
   return(estimatePDFe)
 }

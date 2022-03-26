@@ -1,9 +1,18 @@
-getTarget <- function (Ns, target) {
+getTarget <- function (Ns, target = 70) {
   # getTargets calculates position-dependent threshold values about the mean,
   # according to a beta distribution with parameters k and (n + 1 - k), where
   # k is the position and n is the total number of positions.  These beta
   # distributions represent probability per position for sort order
   # statistics for a uniform distribution.
+  
+  if (!is.numeric(Ns)) {
+    stop("Number of samples must be numeric")
+  }
+  
+  if (!is.numeric(target) || target < 0 || target >= 100) {
+    stop("target confidence percentage must be between 1 and 100")
+  }
+  
   
   above = matrix(0, 1, Ns);          
   below = matrix(0, 1, Ns);        
@@ -309,6 +318,6 @@ getTarget <- function (Ns, target) {
     above[k] = -below[Ns1-k];
     below[k] = -above[Ns1-k];
   }
-  target = matrix(c(above, below), nrow = length(below), ncol = 2)
-  return (target)
+  bounds = matrix(c(above, below), nrow = length(below), ncol = 2)
+  return (bounds)
 }

@@ -7,7 +7,7 @@ summary.PDFe <- function(object, ...){
     lowBound = estimate$low
   }
   if (estimate$isHigh) {
-    lowBound = estimate$high
+    highBound = estimate$high
   }
   
   if (estimate$outlierCutoff > 0) {
@@ -45,5 +45,7 @@ summary.PDFe <- function(object, ...){
                 estimate$threshold), quote = FALSE)
   print(sprintf("   number of Lagrange multipliers: %d", 
                 length(which(estimate$lagrange != 0))), quote = FALSE)
+  
+  return(invisible(object))
   
 }

@@ -2,7 +2,23 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
                       plotShading = FALSE, shadeResolution = 100, 
                       showOutlierPercent = 0, outlierColor = "red3",
                       sqrPlotThreshold = 2, sqrColor = "steelblue4", 
-                      type="l", lwd = 2, xlab = "x", ylab = "PDF", ...){
+                      type="l", lwd = 2, xlab = "x", ylab = "PDF", 
+                      legendcex = 0.9, ...){
+  
+  
+  
+  if (!is.numeric(lwd)) {
+    stop("plot line width must be numeric")
+  }
+  if (plotPDF == FALSE && plotSQR == FALSE && plotShading == FALSE) {
+    stop("no plot type specified: plotPDF, plotSQR, or plotShading")
+  }
+  
+  if (!is.numeric(showOutlierPercent) || 
+      showOutlierPercent < 0 || showOutlierPercent >= 100) {
+    stop("showOutlierPercent must be greater than 0 and less than 100")
+  }
+  
   estimate = x
   x = estimate$x
   pdf = estimate$pdf
@@ -73,8 +89,8 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
       plot(mean, targets[ , 2], type = "l", lty = 2, ylim = sqrRange, xlab = "", ylab = "")
       par(new = TRUE)
       percentActual = ceiling(nOutside / length(sqr) * 100)
-      legend("bottomright", inset = 0.01, horiz = TRUE, legend = paste("outliers ", percentActual, "%", sep = ""), col = outlierColor, lty=1, cex=0.6, box.lty = 0)
-      legend("topright", inset = 0.01, horiz = TRUE, legend = paste("confidence threshold ", showOutlierPercent, "%", sep = ""), col = sqrColor, lty=2, cex=0.6, box.lty = 0)
+      legend("bottomright", inset = 0.01, horiz = TRUE, legend = paste("outliers ", percentActual, "%", sep = ""), col = outlierColor, lty=1, cex=legendcex, box.lty = 0)
+      legend("topright", inset = 0.01, horiz = TRUE, legend = paste("confidence ", showOutlierPercent, "%", sep = ""), col = sqrColor, lty=2, cex=legendcex, box.lty = 0)
       if (nOutside > 0) {
         symbols(mean[iOutside], sqr[iOutside], add = TRUE, circles = rep(0.01, length(iOutside)), bg = outlierColor, fg = outlierColor, inches = 0.01, xlab ="", ylab = "", ylim = sqrRange, xlim = c(0, 1))
         par(new = TRUE)

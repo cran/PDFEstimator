@@ -214,7 +214,6 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
     
     if (input->estimatePoints) {        
         int nEstimate = input->estimatedPoints.size();
-        double sumP = 0;
         for (int k = 0; k < nEstimate; k++) {
             q = input->estimatedPoints[k];
             if ((q < min) || (q > max)) {
@@ -233,12 +232,10 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
                 p /= (max - min)/2;   
                 p /= termsSum;
             }
-            sumP += p * dzPoint[k];
-            x.push_back(q);
-            PDF.push_back(p);
-            CDF.push_back(sumP);
+            xPoints.push_back(q);
+            PDFPoints.push_back(p);
         }
-    } else {  
+    } //else {  
          
         for (int k = 0; k < dzSize; k++) {
             double pk = termsP[k] / termsSum;
@@ -279,7 +276,7 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
                 q += dzBig[k];
             }
         }    
-    }
+//    }
     
     delete [] dz;
 }

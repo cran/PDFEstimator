@@ -49,6 +49,8 @@ public:
     vector <double> x;
     vector <double> PDF;   
     vector <double> CDF;   
+    vector <double> xPoints;
+    vector <double> PDFPoints;  
     vector <double> SQR;
     vector <double> L;
     vector <double> R;

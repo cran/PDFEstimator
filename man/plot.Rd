@@ -7,7 +7,8 @@
   \method{plot}{PDFe}(x, plotPDF = TRUE, plotSQR = FALSE,
   plotShading = FALSE, shadeResolution = 100, 
   showOutlierPercent = 0, outlierColor = "red3", sqrPlotThreshold = 2, 
-  sqrColor = "steelblue4", type="l", lwd = 2, xlab = "x", ylab = "PDF", ...)}
+  sqrColor = "steelblue4", type="l", lwd = 2, xlab = "x", ylab = "PDF", 
+                      legendcex = 0.9, ...)}
 \arguments{
 	\item{x}{an "estimatePDF" object}	
 	\item{plotPDF}{plot the probability density function}
@@ -22,12 +23,10 @@
 	\item{lwd}{line width for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this line width}
 	\item{xlab}{x-axis label for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this label}
 	\item{ylab}{y-axis label for pdf. If plotPDF = FALSE and plotSQR = TRUE, then the sqr plot uses this label}
+	\item{legendcex}{expansion factor for legend point size with sqr plot type, for plotPDF = FALSE and plotSQR = TRUE}
 	\item{...}{further plotting parameters}
 }
-\value{
-	\item{}{None}
-}
-\references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PloS one 13(5): e0196937.}
+\references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.}
 \author{Jenny Farmer, Donald Jacobs}
 \examples{
 

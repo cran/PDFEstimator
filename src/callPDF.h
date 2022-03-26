@@ -23,11 +23,12 @@ public:
     callPDF();
     callPDF(const callPDF& orig);
     virtual ~callPDF();
-    void makeCall(double * sampleData, int sampleLength, double * estimationPoints, int estimationLength, int isSpecifyPoints, double low, double high, int isLow, int isHigh, double target, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug);
+    void makeCall(double * sampleData, int sampleLength, double * estimationPoints, int estimationLength, int isSpecifyPoints, double low, double high, int isLow, int isHigh, double target, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug, int smooth);
     
     vector <double> Vcdf;
     vector <double> Vpdf;
-    vector <double> Vx;
+    vector <double> Vx; 
+    vector <double> VpdfPoints;
     vector <double> Vsqr;
     vector <double> Vlagrange;
     vector <double> Vr;

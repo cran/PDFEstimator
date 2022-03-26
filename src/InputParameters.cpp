@@ -45,7 +45,8 @@ InputParameters::InputParameters() {
     maxLagrange = 200;//2 for power
     minLagrange = 1;
     nLagrangeAdd = 5;
-    outlierCutoff = 7.0;    
+    outlierCutoff = 7.0;
+    smooth = true;
     
     fractionLagrangeAdd = 0.1;
     initSigma = 0.1;
@@ -67,7 +68,7 @@ InputParameters::~InputParameters() {
 
 void InputParameters::setEstimationPoints(vector<double> x) {
     estimatedPoints.resize(x.size());
-    sort(x.begin(), x.end());
+//    sort(x.begin(), x.end());
     estimatedPoints =  x;
     estimatePoints = true;
 }

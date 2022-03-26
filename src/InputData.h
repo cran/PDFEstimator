@@ -47,6 +47,9 @@ public:
     int nLeftOutliers;
     int nPointsAdjust;
     ChebyShev cheby;
+    
+    vector <int> smoothWindow;
+    vector <double> smoothSize;
         
     InputData(const InputParameters& input);
     InputData(const InputData& orig);

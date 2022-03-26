@@ -105,12 +105,18 @@ bool InputData::processData() {
     } else {
         double max = rawData[nValues - 1];
         maximumCalc = max + (max - rawData[rawData.size() - 5]);
+        if (maximumCalc < max) {
+            maximumCalc = max;
+        }
     }
     if (input.lowerBoundSpecified) {  
         minimumCalc = input.lowerBound;
     } else {
         double min = rawData[0];
         minimumCalc = min + (min - rawData[4]);
+        if (minimumCalc > min) {
+            minimumCalc = min;
+        }
     }
     
     if (input.outlierCutoff > 0) {        
@@ -122,6 +128,7 @@ bool InputData::processData() {
     }
     setAdaptiveDz();  
     cheby.initialize(doubleInverse, 2*nPointsAdjust-1);
+    cheby.initializeDx(doubleInverse, 2*nPointsAdjust-1);
     return true;
 }
 
@@ -216,40 +223,60 @@ void InputData::setAdaptiveDz() {
     double next;
     bool breakOut = false;
     double dzMax = 1.0/(nPoints - 1);
+    double maxSmoothWindow = 10;
           
     int skip = (int) (N/(nPoints - 1));
-    if (skip==0) skip = 1;                       
-    
+    if (skip==0) skip = 1;
+           
     inverseVector.push_back(0);    
-    inverseVector.push_back(transformedZeroOne[0]);
-    
-    for (int b = skip; b <= (N + skip); b+=skip) {
+    for (int b = 0; b <= (N + skip); b+=skip) {
         if (b >= (N-1)) {
-            inverseVector.push_back(transformedZeroOne[N-1]);
+            next = 1;
             breakOut = true;
         }
         else {
             next = transformedZeroOne[b];
-            double test = next - last;
-            double difference = fabs(test);
-            if (difference > dzMax) {
-                double steps =  difference/dzMax;
-                int iSteps = (int) steps;
-                for (int k = 0; k < (iSteps + 1); k++) {
-                    double add = inverseVector[inverseVector.size() - 1] + difference/(iSteps + 1);
-                    inverseVector.push_back(add);
-                }
-            } else { 
-                inverseVector.push_back(next);
+        }
+        double test = next - last;
+        double difference = fabs(test);
+        if (difference > dzMax) {
+            double steps =  difference / dzMax;
+            int iSteps = (int) steps;
+            int wStepSize = iSteps + 1;
+            double add = difference / (iSteps + 1);
+            if (iSteps > maxSmoothWindow) {
+                double windowSteps = (iSteps + 1) / maxSmoothWindow;
+                int wSteps = ceil(windowSteps);
+                wStepSize = (int) (iSteps * 1.0 + 1) / wSteps;
             }
-        }      
+            double sum = 0;
+            int windows = 0;
+            for (int k = 0; k < (iSteps + 1); k++) {
+                inverseVector.push_back(inverseVector[inverseVector.size() - 1] + add);
+                sum += add;
+                windows ++;
+                if ((windows) > wStepSize) {
+                    smoothWindow.push_back((windows) * 2);
+                    smoothSize.push_back(sum);
+                    sum = 0;
+                    windows = 0;
+                }
+            }
+            if (windows > 0) {
+                smoothWindow.push_back((windows) * 2);
+                smoothSize.push_back(sum);
+            }
+        } else { 
+            inverseVector.push_back(next);
+            smoothWindow.push_back(2);
+            smoothSize.push_back(difference);
+        }
         if (breakOut) break;
         last = next; 
     }            
     
-    inverseVector.push_back(1);
+    inverseVector[inverseVector.size() - 1] = 1;
     int inverseSize = inverseVector.size();
-    
     inverse = new double[inverseSize];
     doubleInverse = new double[2 * inverseSize - 1];
     dz = new double[2 * inverseSize - 2];    

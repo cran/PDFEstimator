@@ -9,10 +9,10 @@
   \item{xPlotRange}{the x-axis range for plotting}
   \item{sqrPlotThreshold}{magnitude of ylim above and below zero}
 }
-\details{plotBeta is intended for use with the plot method in the PDFEstimator package for plotting PDFe density estimation objects.
+\details{plotBeta is intended for use with the plot method in the PDFEstimator package for plotting pdfe density estimation objects.
 }
 \references{
-Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PloS one 13(5): e0196937.
+Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.
 }
 \author{Jenny Farmer, Donald Jacobs}
 \seealso{plot.PDFe}

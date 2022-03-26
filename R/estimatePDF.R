@@ -1,34 +1,74 @@
 estimatePDF <- function(sample, pdfLength = NULL, estimationPoints = NULL,
                         lowerBound = NULL, upperBound = NULL, target = 70, 
                         lagrangeMin = 1, lagrangeMax = 200, 
-                        debug = 0, outlierCutoff = 7) {
+                        debug = 0, outlierCutoff = 7, smooth = TRUE) {
 
-	inputLength = vector("numeric", 1)
-	inputLength [1] = length(sample)
+  
+  if (is.null(sample) || !is.numeric(sample)) {
+    stop("a numeric vector of sample data is required")
+  }
+  
+  if (!is.null(upperBound) && !is.numeric(upperBound)) {
+    stop("upperBound must be numeric")
+  }
+  if (!is.null(lowerBound) && !is.numeric(lowerBound)) {
+    stop("lowerBound must be numeric")
+  }
+  if (!is.null(lowerBound) && !is.null(upperBound)) {
+    if (lowerBound >= upperBound) {
+      stop("lowerBound must be less than upperBound")
+    }
+  }
 
+  if (!is.numeric(lagrangeMin)) {
+    stop("lagrangeMin must be an integer greater than zero")
+  }
+  if (!is.numeric(lagrangeMax)) {
+    stop("lagrangeMax must be an integer greater than zero")
+  }
+  if (lagrangeMin >= lagrangeMax) {
+    stop("lagrangeMin must be less than or equal to lagrangeMax")
+  }
+ 
+  if (!is.numeric(target) || target < 1 || target > 100) {
+    stop("target confidence percentage must be between 1 and 100")
+  }
+  
+  if (!is.numeric(outlierCutoff) || outlierCutoff < 0) {
+    stop("outlierCutoff must be a number greater than 0")
+  }
+  
+  inputLength = vector("numeric", 1)
+  inputLength [1] = length(sample)
 	if (is.null(pdfLength)) {
 	  pdfLength = floor(200 + inputLength/200.0)
 	  if (pdfLength > 1500) {
 	    pdfLength = 1500;	
 	  }
-	}
-	
-
-	estimationLength = vector("numeric", 1)
-	isSpecifyPoints = vector("numeric", 1)
-	if (is.null(estimationPoints)) {
-	  isSpecifyPoints[1] = FALSE
 	} else {
-	  isSpecifyPoints[1] = TRUE
-	  estimationLength[1] = length(estimationPoints)
-	  if (length(estimationPoints) > pdfLength) {
-	    pdfLength = length(estimationPoints)
+	  if(!is.numeric(pdfLength)) {
+	    stop("pdfLength must be numeric")
 	  }
 	}
 	
-	outputLength = vector("numeric", 1)
-	outputLength[1] = pdfLength
-	
+  estimationLength = vector("numeric", 1)
+  isSpecifyPoints = vector("numeric", 1)
+  if (is.null(estimationPoints)) {
+    isSpecifyPoints[1] = FALSE
+  } else {
+    if(!is.vector(estimationPoints, mode = "any") || !is.numeric(estimationPoints)) {
+      stop("estimationPoints must be a vector of numeric data")
+    }
+    isSpecifyPoints[1] = TRUE
+    estimationLength[1] = length(estimationPoints)
+    if (length(estimationPoints) > pdfLength) {
+      pdfLength = length(estimationPoints)
+    }
+  }
+  
+  outputLength = vector("numeric", 1)
+  outputLength[1] = pdfLength
+  
 	low = vector("numeric", 1)
 	high = vector("numeric", 1)
 	
@@ -59,11 +99,11 @@ estimatePDF <- function(sample, pdfLength = NULL, estimationPoints = NULL,
 	sqrSize = vector("numeric", 1)
 	sqrSize [1] = 0
 	
-
 	distribution=.C(getNativeSymbolInfo("estimatePDF", "PDFEstimator"), 
 				sample = as.double(sample), 
 				inputLength = as.integer(inputLength),
 				estimationPoints = as.double(estimationPoints),
+				pointsPDF = as.double(vector("numeric", estimationLength)),
 				estimationLength = as.integer(estimationLength),
 				isSpecifyPoints = as.integer(isSpecifyPoints),
 				low = as.double(low), 	
@@ -75,6 +115,7 @@ estimatePDF <- function(sample, pdfLength = NULL, estimationPoints = NULL,
 				lagrangeMax = as.integer(lagrangeMax),
 				debug = as.integer(debug),
 				outlierCutoff = as.integer(outlierCutoff),
+				smooth = as.integer(smooth),
 				outputLength = as.integer(outputLength),
 				failedSolution = as.integer(failedSolution),
 				threshold = as.double(threshold),
@@ -85,12 +126,6 @@ estimatePDF <- function(sample, pdfLength = NULL, estimationPoints = NULL,
 				sqrSize = as.double(sqrSize),
 				lagrange = as.double(vector("numeric", lagrangeMax)),
 				r = as.double(vector("numeric", inputLength)))
-	
-	      if (!is.null(estimationPoints)) {
-	        distribution$x = distribution$x[1:estimationLength]
-	        distribution$pdf = distribution$pdf[1:estimationLength]
-	        distribution$cdf = distribution$cdf[1:estimationLength]
-	      }
 	
 	      class(distribution) <- "PDFe"
 	      return(distribution)

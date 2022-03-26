@@ -16,11 +16,12 @@ callPDF::callPDF(const callPDF& orig) {
 callPDF::~callPDF() {
 }
 
-void callPDF::makeCall(double * sampleData, int sampleLength, double * estimationPoints, int estimationLength, int isSpecifyPoints, double low, double high, int isLow, int isHigh, double target, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug) {
+void callPDF::makeCall(double * sampleData, int sampleLength, double * estimationPoints, int estimationLength, int isSpecifyPoints, double low, double high, int isLow, int isHigh, double target, int points, int lagrangeMin, int lagrangeMax, int outlierCutoff, int debug, int smooth) {
     InputParameters *input = new InputParameters;
     out.debug = debug;
     input->out.debug = debug;    
     input->outlierCutoff = outlierCutoff;
+    input->smooth = smooth;
     input->minLagrange = lagrangeMin;
     input->maxLagrange = lagrangeMax;
     input->SURDTarget = target;
@@ -67,16 +68,14 @@ void callPDF::makeCall(double * sampleData, int sampleLength, double * estimatio
         solutionThreshold = minimumPDF->bestThreshold;
         write.createSolution(input, data, minimumPDF, score);  
         this->N = data->N;
-        
-//        if (!solutionFailed) {
-            write.createQQ(minimumPDF->bestRandom, data->N);   
-            Vsqr = write.SQR;
-            Vcdf = write.CDF;
-            Vpdf = write.PDF;
-            Vx   = write.x;
-            Vlagrange = write.L;
-            Vr = write.R;
-//        } 
+        write.createQQ(minimumPDF->bestRandom, data->N);   
+        Vsqr = write.SQR;
+        Vcdf = write.CDF;
+        Vpdf = write.PDF;
+        VpdfPoints = write.PDFPoints;
+        Vx   = write.x;
+        Vlagrange = write.L;
+        Vr = write.R;
         delete data;
         delete score;
         delete minimumPDF;
