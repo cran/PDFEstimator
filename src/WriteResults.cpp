@@ -279,6 +279,7 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
 //    }
     
     delete [] dz;
+    delete [] dzPoint;
 }
 
 

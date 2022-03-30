@@ -255,6 +255,6 @@ void InputParameters::printUsage() {
     out.print( " -n    maximum number of Lagrange multipliers");
     out.print( " -m    minimum number of Lagrange multipliers");
     out.print( " -y    penalty flag [on/off]");
-    out.print( " -d    debug [on/off]");
+    out.print( " -g    debug [on/off]");
 }
 

@@ -77,9 +77,7 @@ private:
     vector <double> smoothSize;
     double smoothError;
     bool smooth;
-    
-    vector <double> A1;
-    vector <double> A2;
+   
     
     void funnelDiffusion(double * original, double * updated, int arraySize, double currentSigmaMu);
     void funnelDiffusion(double * original, double * updated, int arraySize, double currentSigmaMu, int startIndex);

@@ -87,8 +87,6 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     this->smooth = input->smooth;
     this->smoothWindow = data.smoothWindow;
     this->smoothSize = data.smoothSize;
-    A1.reserve(smoothWindow.size());
-    A2.reserve(smoothWindow.size());
     this->nPoints = data.nPointsAdjust;
     this->N = data.N;
     if (partitionSize > N) {
@@ -372,11 +370,12 @@ void MinimizeScore::calculatePDFAdaptive (double cdf[], double lagrange[], int m
     if (smooth) {
         smoothError = 0; 
         int k = 0;
+        double A = 0;
         int windowSize = smoothWindow.size();
         for(int m = 0; m < windowSize; m++) { 
-            A1[m] = x[k] + (dx[k]) * (smoothSize[m]);
-            smoothError += (x[k + smoothWindow[m]] - A1[m]) * (x[k + smoothWindow[m]] - A1[m]);
-            k += smoothWindow[m];
+            A = x[k] + (dx[k]) * (smoothSize[m]);
+            smoothError += (x[k + smoothWindow[m]] - A) * (x[k + smoothWindow[m]] - A);
+            k += smoothWindow[m];           
         }
     }
     
