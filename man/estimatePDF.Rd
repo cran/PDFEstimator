@@ -6,7 +6,7 @@
 lowerBound = NULL, upperBound = NULL, target = 70, lagrangeMin = 1, 
 lagrangeMax = 200, debug = 0, outlierCutoff = 7, smooth = TRUE)}
 \arguments{
-	\item{sample}{the data sample from which to calculate the density estimate}
+	\item{sample}{the data sample from which to calculate the density estimate. If the sample has more than 1 column, the multivariate estimation function, estimatePDFmv(), is called instead.}
 	\item{pdfLength}{the desired length of the estimate returned.  Default value is calculated based on sample length.  Overriding this calculation can increase or decrease the resolution of the estimate.}
 	\item{estimationPoints}{a vector containing the points to estimate.  If not specified, this is calculated automatically to span the entire sample data.}
 	\item{lowerBound}{the lower bound of the PDF, if known.  Default value is calculated based on the range of the data sample.}

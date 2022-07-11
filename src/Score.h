@@ -24,14 +24,9 @@
 using namespace std;
 
 class Score {
-public:
-    double targetScore;
-    double minimumScore;
-    double maximumScore;
-        
+public:        
     Score() {};
     Score(const Score& orig) {};
-    Score(double confidenceTarget, double confidenceMin, double confidenceMax); 
     virtual ~Score();
     
     virtual double calculateScorePartition(double r[], int p) {return 0;}
@@ -43,6 +38,8 @@ public:
 //    void setVarianceMin(bool qzVar) {minimizeVariance = qzVar;}
     double getConfidence(double score);    
     double QZVariance;
+        
+    double getTargetScore(double SURD);  
     
 protected:
     vector <double> scores;
@@ -50,7 +47,6 @@ protected:
     double likelihood;
     vector <int> indices;
             
-    double getTargetScore(double SURD);  
     void getValues();
     
 };

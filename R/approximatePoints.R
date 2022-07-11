@@ -1,6 +1,6 @@
 approximatePoints <- function(estimate, estimationPoints) {
  
-  if (class(estimate) != "PDFe") {
+  if (is(estimate) != "PDFe") {
     stop("estimate must be a PDFe class")
   }
   if (!is.numeric(estimationPoints)) {

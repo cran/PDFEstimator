@@ -15,14 +15,6 @@
 
 #include "Score.h"
 
-
-Score::Score(double confidenceTarget, double confidenceMin, double confidenceMax) {
-    targetScore = getTargetScore(confidenceTarget);
-    minimumScore = getTargetScore(confidenceMin);
-    maximumScore = getTargetScore(confidenceMax);
-}
-
-
 Score::~Score() {
 }
 

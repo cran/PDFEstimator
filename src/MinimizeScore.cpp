@@ -21,7 +21,7 @@ MinimizeScore::MinimizeScore() {
     normalize = 0;    
     useLast = false;
     y2 = 0;
-    seed = 1;//2345678;
+    seed = 12345678;
     nPoints = 0;
     N = 0;
     maxLagrange = 0; 
@@ -31,8 +31,8 @@ MinimizeScore::MinimizeScore() {
     smoothError = 0; 
 }
 
-MinimizeScore::MinimizeScore(const MinimizeScore& orig) {
-}
+//MinimizeScore::MinimizeScore(const MinimizeScore& orig) {
+//}
 
 MinimizeScore::~MinimizeScore() {
     delete [] trialRandom;
@@ -49,24 +49,27 @@ vector <double> MinimizeScore::getLagrange() {
     return lagrange;
 }
 
-bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Score& score) {         
+bool MinimizeScore::minimize(const InputParameters& input, const InputData& data) {
     
 #ifdef clock
     clock_t algorithmTime;                                                  
     algorithmTime = clock();
 #endif
 #ifndef outputR
-    srand(time(0));
+    srand(seed);//time(0));
 #endif
-    int minLagrange = input->minLagrange;
-    maxLagrange = input->maxLagrange;
-    int nLagrangeAdd = input->nLagrangeAdd;
-    double fractionLagrangeAdd = input->fractionLagrangeAdd;
-    int loopMax = input->loopMax;
-    double initSigma = input->initSigma;
-    double finalSigma = input->finalSigma;
-    double decayFactor = input->decayFactor;   
-    partitionSize = input->initPartitionSize;    
+    
+    ScoreQZ score = ScoreQZ();
+    
+    int minLagrange = input.minLagrange;
+    maxLagrange = input.maxLagrange;
+    int nLagrangeAdd = input.nLagrangeAdd;
+    double fractionLagrangeAdd = input.fractionLagrangeAdd;
+    int loopMax = input.loopMax;
+    double initSigma = input.initSigma;
+    double finalSigma = input.finalSigma;
+    double decayFactor = input.decayFactor;   
+    partitionSize = input.initPartitionSize;    
     
     bool phaseOne = true;    
     targetPartition = data.N;         
@@ -84,7 +87,7 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     this->dzWeight3 = data.dzWeight3;
     double * transformedZeroOne = data.transformedZeroOne;
     this->cheby = data.cheby;
-    this->smooth = input->smooth;
+    this->smooth = input.smooth;
     this->smoothWindow = data.smoothWindow;
     this->smoothSize = data.smoothSize;
     this->nPoints = data.nPointsAdjust;
@@ -137,9 +140,9 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     }    
     
     double trialScore = 0;
-    double targetScore = score.targetScore;
-    double minimumScore = score.minimumScore;   
-    double maximumScore = score.maximumScore;    
+    double targetScore = score.getTargetScore(input.SURDTarget);
+    double minimumScore = input.SURDMinimum;//score.minimumScore;   
+    double maximumScore = input.SURDMaximum;//score.maximumScore;    
     
     bool funnelFinished    = false;
     bool solutionNotFound  = false;   
@@ -198,8 +201,7 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
             if (trialScore > bestScore) {  
                 ostringstream strOut;
                 strOut << "SURD score: " << score.getLikelihood() << ";  global: " << globalScore << ";  variance: " << score.QZVariance << ";  smooth: " << smoothError <<  ";  lagrange: " << mode << ";  partition size: " << partitionSize << "; target:  " << targetPartition;       
-//                 strOut << "SURD score: " << score.getLikelihood() << ";  global: " << globalScore <<  ";  lagrange: " << mode << ";  partition size: " << partitionSize << "; target:  " << targetPartition;       
-               
+            
                 out.print(strOut.str());
                 if (score.getLikelihood() < maximumScore) {
                     bestScore = trialScore;  
@@ -323,16 +325,16 @@ bool MinimizeScore::minimize(InputParameters *input, const InputData& data, Scor
     bestThreshold = score.getConfidence(globalScore);    
     
     if (!solutionNotFound) {
-        if (input->writeQQ) {
+        if (input.writeQQ) {
             WriteResults write;
             string filename;
-            filename = input->outputPath + input->qqFile;
+            filename = input.outputPath + input.qqFile;
             write.writeQQ(filename, bestRandom, N, false);
         }
-        if (input->writeSQR) {
+        if (input.writeSQR) {
             WriteResults write; 
             string filename;
-            filename = input->outputPath  + input->sqrFile;
+            filename = input.outputPath  + input.sqrFile;
             write.writeQQ(filename, bestRandom, N, true);
         }
     }
@@ -470,8 +472,10 @@ double MinimizeScore::random(double m, double s) {
             x1 = 2.0 * unif_rand() - 1;
             x2 = 2.0 * unif_rand() - 1;
 #else            
-            x1 = 2*(1.0 * rand() / RAND_MAX) - 1;
-            x2 = 2*(1.0 * rand() / RAND_MAX) - 1;
+//            x1 = 2*(1.0 * rand() / RAND_MAX) - 1;
+//            x2 = 2*(1.0 * rand() / RAND_MAX) - 1;
+            x1 = 2*(1.0 * ranX()) - 1;
+            x2 = 2*(1.0 * ranX()) - 1;
 #endif
             w = x1 * x1 + x2 * x2;
         } while ( w >= 1.0 );

@@ -4,6 +4,15 @@ estimatePDF <- function(sample, pdfLength = NULL, estimationPoints = NULL,
                         debug = 0, outlierCutoff = 7, smooth = TRUE) {
 
   
+  
+  sampleDim = dim(sample)
+  if (!is.null(sampleDim)) {
+    if (sampleDim[2] > 1) {
+      print("Calling estimatePDFmv for multivariate sample", quote = FALSE)
+      return(estimatePDFmv(sample, debug))
+    }
+  }
+  
   if (is.null(sample) || !is.numeric(sample)) {
     stop("a numeric vector of sample data is required")
   }

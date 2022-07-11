@@ -59,8 +59,6 @@ public:
     int     initPartitionSize;
     int     startSolutionNumber;
     int     integrationPoints;
-    int     numberSolutions;
-    int     numberTrials;
     int     maxLagrange;
     int     minLagrange;
     int     nLagrangeAdd;
@@ -76,12 +74,9 @@ public:
     void setEstimationPoints(vector <double> x);    
     vector <double> estimatedPoints;
     bool estimatePoints;
-    
-    float   symmetryPoint;
-    bool    symmetry;
-    
+        
     InputParameters();
-    InputParameters(const InputParameters& orig);
+//    InputParameters(const InputParameters& orig);
     virtual ~InputParameters();
     bool userInput(int argc, char** argv);    
     

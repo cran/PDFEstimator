@@ -17,42 +17,39 @@
 WriteResults::WriteResults() {
 }
 
-WriteResults::WriteResults(const WriteResults& orig) {
-}
 
 WriteResults::~WriteResults() {
 }
 
+void WriteResults::writeSolution(const InputParameters& input, const InputData& data, MinimizeScore& solution, 
+                                 string fileNameAdd) {
+    writeSolution(input, data, solution, ScoreQZ(), 0, fileNameAdd);
+}
 
-void WriteResults::writeSolution(InputParameters *input, InputData *data, MinimizeScore *solution, int solutionNumber, int trialNumber, Score *score, bool failed) {
+void WriteResults::writeSolution(const InputParameters& input, const InputData& data, MinimizeScore& solution, 
+                                 Score score, bool failed, string fileNameAdd) {
         
-    createSolution(input, data, solution, score);
+    createSolution(input, data, solution);
     
     ofstream outFile;
-    if (input->writeFile) {
-        ostringstream solutionString; 
-        solutionString << trialNumber;
+    if (input.writeFile) {
         ostringstream surdString; 
-        surdString << input->SURDTarget;  
+        surdString << input.SURDTarget;  
         string filename;
-        if (input->outputFile == "") {
-            if (failed) {
-                if (trialNumber > 1) {
-                    filename = "FAILED_PDF_" + surdString.str() + "_" + solutionString.str() + "_" + input->inputFile;
+        if (!(fileNameAdd == "")) {
+            filename = fileNameAdd + "_" + input.inputFile;
+        } else {
+            if (input.outputFile == "") {
+                if (failed) {
+                    filename = "FAILED_PDF_" + surdString.str() + "_" + input.inputFile;
                 } else {
-                    filename = "FAILED_PDF_" + surdString.str() + "_" + input->inputFile;
+                    filename = "PDF_" + surdString.str() + "_" + input.inputFile;
                 }
             } else {
-                if (trialNumber > 1) {
-                    filename = "PDF_" + surdString.str() + "_" + solutionString.str() + "_" + input->inputFile;
-                } else {
-                    filename = "PDF_" + surdString.str() + "_" + input->inputFile;
-                }
+                filename = input.outputFile;
             }
-        } else {
-            filename = input->outputFile;
         }
-        filename = input->outputPath + filename;
+        filename = input.outputPath + filename;
         outFile.open((filename).c_str());
         if(!outFile.is_open()){
             out.print("Failed to open data file " + filename);
@@ -60,117 +57,123 @@ void WriteResults::writeSolution(InputParameters *input, InputData *data, Minimi
         }
     }
     
-    if ((input->writeFile) && (input->writeHeader)) {
+    if ((input.writeFile) && (input.writeHeader)) {
         if (failed) {
             outFile << "***** FAILED SOLUTION **********\n\n";
         }
 #ifdef clock
-        float time = solution->duration;
+        float time = solution.duration;
         outFile << "#   calculation time: " << time << " seconds\n";
         if (time >= 60) {
             outFile << "#                    (" << time/60 << " minutes)\n";
         }
         outFile << "#\n";
 #endif          
-        outFile << "#   total # of trials: " << trialNumber << " \n";
-        outFile << "#\n";            
         outFile << "# PARAMETERS\n";            
         outFile << "#\n";            
-        outFile << "#   minimum confidence:           "  << input->SURDTarget << "%\n";    
+        outFile << "#   minimum confidence:           "  << input.SURDTarget << "%\n";    
         
-        outFile << "#   minimum data value:           "  << data->minimumRaw << "\n";  
-        outFile << "#   maximum data value:           "  << data->maximumRaw << "\n";   
+        outFile << "#   minimum data value:           "  << data.minimumRaw << "\n";  
+        outFile << "#   maximum data value:           "  << data.maximumRaw << "\n";   
             
-        if (input->lowerBoundSpecified) {
-            outFile << "#   requested left boundary:      " << input->lowerBound << "\n";                
+        if (input.lowerBoundSpecified) {
+            outFile << "#   requested left boundary:      " << input.lowerBound << "\n";                
         } else {
             outFile << "#   requested left boundary:      infinite\n" ;
         }
           
-        if (input->upperBoundSpecified) {
-            outFile << "#   requested right boundary:      " << input->upperBound << "\n";                
+        if (input.upperBoundSpecified) {
+            outFile << "#   requested right boundary:      " << input.upperBound << "\n";                
         } else {
             outFile << "#   requested right boundary:     infinite\n" ;
         }
                       
-        outFile << "#   right outliers removed:       "  << data->nRightOutliers << "\n";  
-        outFile << "#   left outliers removed:        "  << data->nLeftOutliers << "\n";        
-        outFile << "#   recalculated left boundary:   "  << data->minimumCalc << "\n";                    
-        outFile << "#   recalculated right boundary:  "  << data->maximumCalc << "\n";     
-        outFile << "#   number of sample points used: "  << data->N << "\n";                                 
-        outFile << "#   starting partition:           "  << input->initPartitionSize << "\n";  
-        outFile << "#   max lagrange :                "  << input->maxLagrange << "\n";         
-        outFile << "#   attempts per step size:       "  << input->loopMax << "\n";                                        
-        outFile << "#   integration points:           "  << data->nPoints << "\n";      
-        outFile << "#   integration points adjusted:  "  << data->nPointsAdjust << "\n";                
+        outFile << "#   right outliers removed:       "  << data.nRightOutliers << "\n";  
+        outFile << "#   left outliers removed:        "  << data.nLeftOutliers << "\n";        
+        outFile << "#   recalculated left boundary:   "  << data.minimumCalc << "\n";                    
+        outFile << "#   recalculated right boundary:  "  << data.maximumCalc << "\n";     
+        outFile << "#   number of sample points used: "  << data.N << "\n";                                 
+        outFile << "#   starting partition:           "  << input.initPartitionSize << "\n";  
+        outFile << "#   max lagrange :                "  << input.maxLagrange << "\n";         
+        outFile << "#   attempts per step size:       "  << input.loopMax << "\n";                                        
+        outFile << "#   integration points:           "  << data.nPoints << "\n";      
+        outFile << "#   integration points adjusted:  "  << data.nPointsAdjust << "\n";                
         outFile << "#\n";            
             
         outFile << "# SCORES\n";                    
         outFile << "#\n";               
-//        outFile << "#   variance :         " << solution->bestScore << "\n";  
-        outFile << "#   QZ score:     " << score->getLikelihood() << "\n";
-        outFile << "#   SURD threshold:       " << score->getConfidence(score->getLikelihood()) << "%\n";
+//        outFile << "#   variance :         " << solution.bestScore << "\n";  
+//        outFile << "#   QZ score:     " << score.getLikelihood() << "\n";
+//        outFile << "#   SURD threshold:       " << score.getConfidence(score.getLikelihood()) << "%\n";
         outFile << "#\n";           
         outFile << "#\n";           
           
     }
     
     
-    if ((input->writeFile) && (input->writeHeader)) {  
-        outFile << "# LAGRANGE MULTIPLIERS (" << solution->mode << ")\n";            
+    if ((input.writeFile) && (input.writeHeader)) {  
+        outFile << "# LAGRANGE MULTIPLIERS (" << solution.mode << ")\n";            
         outFile << "#\n";            
-        for (int j = 0; j < solution->mode; j++) {
+        for (int j = 0; j < solution.mode; j++) {
             outFile << "#   " << L[j] << "\n";     
         }
         outFile << "#\n";            
         outFile << "# PLOT POINTS\n";            
-        outFile << "#\n";            
-        outFile << "#  x                     PDF(x)                     CDF(x) \n";             
+        outFile << "#\n";                      
         
      }
     
-    for (unsigned int k = 0; k < PDF.size(); k++) {
-        if (input->writeFile) {
-            outFile << x[k] << "   " <<  PDF[k] << "   " << CDF[k] << "\n";
+    if (input.estimatePoints) {
+        outFile << "#  x                     PDF(x)\n";   
+        for (unsigned int k = 0; k < PDFPoints.size(); k++) {
+            if (input.writeFile) {
+                outFile << xPoints[k] << "   " <<  PDFPoints[k] << "\n";
+            }
+        }
+    } else {
+        outFile << "#  x                     PDF(x)                     CDF(x) \n";   
+        for (unsigned int k = 0; k < PDF.size(); k++) {
+            if (input.writeFile) {
+                outFile << x[k] << "   " <<  PDF[k] << "   " << CDF[k] << "\n";
+            }
         }
     }
     
-    if (input->writeFile) {
+    if (input.writeFile) {
         outFile.close();
     }
     
 }
 
 
-void WriteResults::createSolution(InputParameters *input, InputData *data, MinimizeScore *solution, Score *score) {
+void WriteResults::createSolution(const InputParameters& input, const InputData& data, MinimizeScore& solution) {
        
-    double max = data->maximumCalc;
-    double min = data->minimumCalc;  
+    double max = data.maximumCalc;
+    double min = data.minimumCalc;  
       
     double dzSize;
     double * dz;
     double * dzPoint;
-    int nSize = input->estimatedPoints.size();
+    int nSize = input.estimatedPoints.size();
     dzPoint = new double[(int) nSize];
-    if (input->estimatePoints) {        
-        dzPoint[0] = (input->estimatedPoints[0] - min);// * (max - min);
-        dzPoint[nSize - 1] = (max - input->estimatedPoints[nSize - 1]);// * (max - min);
+    if (input.estimatePoints) {        
+        dzPoint[0] = (input.estimatedPoints[0] - min);
+        dzPoint[nSize - 1] = (max - input.estimatedPoints[nSize - 1]);
         for (int k = 1; k < (nSize - 1); k++) {
-            dzPoint[k] = input->estimatedPoints[k + 1] - input->estimatedPoints[k];
-//            dzPoint[k] *= (max - min);
+            dzPoint[k] = input.estimatedPoints[k + 1] - input.estimatedPoints[k];
         }
     } 
-    if (input->adaptive) {
+    if (input.adaptive) {
         double * dr;
-        dr = data->dz; 
+        dr = data.dz; 
         double dzUniform = (max - min);
-        dzSize = (data->nPointsAdjust) * 2 - 2;
+        dzSize = (data.nPointsAdjust) * 2 - 2;
         dz = new double[(int) dzSize];
         for (int i = 0; i < dzSize; i++) {
             dz[i] = dr[i] * dzUniform;
         }
     } else {      
-        dzSize = data->nPoints;     
+        dzSize = data.nPoints;     
         double dzUniform = (max - min) * 1.0/dzSize;     
         dzSize++;    
         dz = new double[(int) dzSize];      
@@ -186,14 +189,14 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
     double termsSum = 0;     
     double z = 0;
     double q = min;
-    vector <double> lagrange = solution->getLagrange();
+    vector <double> lagrange = solution.getLagrange();
     for (int k = 0; k < dzSize; k++) {
         z = (2*q - max - min) / (max - min);           
         termsT.clear();
         termsT.push_back(1.0);
         termsT.push_back(z);        
         p = lagrange[0];        
-        for (int t = 1; t < solution->mode; t++) {                
+        for (int t = 1; t < solution.mode; t++) {                
             p += termsT[t] * lagrange[t];
             termsT.push_back(2 * z * termsT[t] - termsT[t-1]);
         }  
@@ -203,19 +206,22 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
         termsSum += p * dz[k];
         q += dz[k];          
     }    
-    double lambdaZero =  -log(termsSum);
+    double lambdaZero =  -log(termsSum);    
+    double normConstant = termsSum;
     
     L.push_back(lambdaZero);
-    for (int j = 1; j < solution->mode; j++) {   
+    for (int j = 1; j < solution.mode; j++) {   
         L.push_back(lagrange[j]);
-        out.print("Lagrange   ", L[j]);
+//        out.print("Lagrange   ", L[j]);
     }
     
     
-    if (input->estimatePoints) {        
-        int nEstimate = input->estimatedPoints.size();
+    if (input.estimatePoints) { 
+        xPoints.clear();
+        PDFPoints.clear();
+        int nEstimate = input.estimatedPoints.size();
         for (int k = 0; k < nEstimate; k++) {
-            q = input->estimatedPoints[k];
+            q = input.estimatedPoints[k];
             if ((q < min) || (q > max)) {
                 p = 0;
             } else {
@@ -224,60 +230,35 @@ void WriteResults::createSolution(InputParameters *input, InputData *data, Minim
                 termsT.push_back(1.0);
                 termsT.push_back(z);        
                 p = lagrange[0];
-                for (int t = 1; t < solution->mode; t++) {                
+                for (int t = 1; t < solution.mode; t++) {                
                     p += termsT[t] * lagrange[t];
                     termsT.push_back(2 * z * termsT[t] - termsT[t-1]);
                 }  
                 p = exp(p);
                 p /= (max - min)/2;   
-                p /= termsSum;
+                p /= normConstant;
             }
             xPoints.push_back(q);
             PDFPoints.push_back(p);
         }
-    } //else {  
+    } 
          
-        for (int k = 0; k < dzSize; k++) {
-            double pk = termsP[k] / termsSum;
-            termsP[k] = pk;
-            if (input->symmetry) {
-                termsP[k] = pk/2.0;
-            }
-        }        
-        vector <double> pdf;                      
-        vector <double> dzBig; 
-        termsSum = 0;
-        int count = 0;
-        if (input->symmetry) {
-            for (int k = (dzSize - 1); k > 0; k--) {                
-                termsSum += termsP[k] * dz[k];
-                CDF.push_back(termsSum);           
-                dzBig.push_back(dz[k]);
-                pdf.push_back(termsP[k]);      
-                count++;
-            }            
-        }
-        for (int k = 0; k < dzSize; k++) {                
-            termsSum += termsP[k] * dz[k];
-            CDF.push_back(termsSum);           
-            dzBig.push_back(dz[k]);
-            pdf.push_back(termsP[k]);       
-            count++;
-        }    
+    termsSum = 0;
+    q = min;
     
-        q = min;   
-        if (input->symmetry) {
-            q = -max;
-        }
-        for (int k = 0; k < count; k++) {
-            x.push_back(q);
-            PDF.push_back(pdf[k]);
-            if (k < count) {
-                q += dzBig[k];
-            }
-        }    
-//    }
+    x.clear();
+    CDF.clear();
+    PDF.clear();
     
+    for (int k = 0; k < dzSize; k++) {
+        double pk = termsP[k] / normConstant;
+        termsSum += pk * dz[k];
+        CDF.push_back(termsSum);  
+        x.push_back(q);
+        PDF.push_back(pk);                
+        q += dz[k];
+    }             
+        
     delete [] dz;
     delete [] dzPoint;
 }

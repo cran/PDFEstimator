@@ -22,7 +22,7 @@
 
 #include "ChebyShev.h"
 #include "InputData.h"
-#include "Score.h"
+#include "ScoreQZ.h"
 #include "OutputControl.h"
 #include <limits>
 #include <climits>
@@ -38,9 +38,8 @@ using namespace std;
 class MinimizeScore {
 public:
     MinimizeScore();
-    MinimizeScore(const MinimizeScore& orig);
     virtual ~MinimizeScore();
-    bool minimize(InputParameters *input, const InputData& data, Score& score);
+    bool minimize(const InputParameters& input, const InputData& data);
     vector <double> getLagrange();    
     
     OutputControl out;

@@ -35,9 +35,8 @@ InputData::InputData(const InputParameters& input) {
     rightOutliers = false;
     
 }
-
-InputData::InputData(const InputData& orig) {
-}
+//InputData::InputData(const InputData& orig) {
+//}
 
 InputData::~InputData() {    
     delete [] doubleInverse;
@@ -59,7 +58,7 @@ bool InputData::readData() {
         out.error("Failed to open data file " + input.inputFile);
         return false;
     }
-	
+	    
     int temp = 0;
     while (getline(fin, line)) {
         double test = atof(line.c_str());
@@ -74,13 +73,17 @@ bool InputData::readData() {
         return false;        
     }
    
-    fin.close();   
+    fin.close();       
+    sort(rawData.begin(), rawData.end());
     return processData();
 }
     
-void InputData::setData(vector<double> data) {
-    rawData.resize(data.size());
+void InputData::setData(vector<double> & data) {       
+    rawData.clear();
+    rawData.reserve(data.size());
     rawData = data;
+    sort(rawData.begin(), rawData.end());
+    
 }
 
 bool InputData::processData() {   
@@ -90,8 +93,6 @@ bool InputData::processData() {
         if (nPoints > 1500) nPoints = 1500;
     }
     
-    sort(rawData.begin(), rawData.end());
-//    double temp = min(fabs(rawData));
     minimumRaw = rawData[0];
     maximumRaw = rawData[rawData.size() - 1];
     if (minimumRaw == maximumRaw) {        
@@ -157,13 +158,13 @@ bool InputData::processData() {
                 q3 = (rawData[(int)quarter + (int)middle] + rawData[(int)quarter + (int)middle + 1])/2;
             } else {
                 q1 = rawData[(int)quarter];
-                q3 = rawData[(int)quarter + (int) middle] + 1;
+                q3 = rawData[(int)quarter + (int) middle];
             }
         }               
         double iqr = input.outlierCutoff*(q3 - q1);
         double leftOutlier = q1 - iqr;
-        double rightOutlier = q3 + iqr;                   
-        
+        double rightOutlier = q3 + iqr;    
+                
         if (maximumCalc > rightOutlier) {
             maximumCalc = rightOutlier;
             rightOutliers = true;                
@@ -307,34 +308,3 @@ void InputData::setAdaptiveDz() {
     nPointsAdjust = inverseSize;        
 }
     
-
-
-void InputData::setUniformDz() {
-   
-    N = transformedData.size();    
-    dz = new double[nPoints];     
-    double dzMax = 1.0/(nPoints - 1);        
-                      
-    for (int b = 0; b < nPoints; b++) {
-        dz[b] = dzMax;
-    }            
-        
-    inverse = new double[nPoints];
-    inverse[0] = 0;
-    for (int j = 1; j < nPoints; j++) {
-        inverse[j] = inverse[j-1] + dz[j-1];
-    }
-    inverse[nPoints - 1] = 1.0;
-    
-    doubleInverse = new double[2 * nPoints - 1];
-    int count = 0;
-    for (int j = 1; j < nPoints; j++) {        
-        doubleInverse[count] = inverse[j-1];
-        doubleInverse[count+1] = (inverse[j-1] + inverse[j])/2.0;
-        count += 2;
-    }        
-    doubleInverse[count] = (inverse[nPoints-1] + 1.0) / 2.0;    
-    nPointsAdjust = nPoints;        
-}
-    
-   

@@ -1,6 +1,6 @@
 /* 
  * PDF Estimator:  A non-parametric probability density estimation tool based on maximum entropy
- * File:   ScoreQZ.h
+ * File:   JointProbability.cpp
  * Copyright (C) 2018
  * Jenny Farmer jfarmer6@uncc.edu
  * Donald Jacobs djacobs1@uncc.edu
@@ -12,29 +12,41 @@
  * this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SCOREQZ_HPP
-#define	SCOREQZ_HPP
 
-#include "Score.h"
+#ifndef JOINTPROBABILITY_H
+#define JOINTPROBABILITY_H
 
-using namespace std;
+#include <vector>
+#include "Variable.h"
+#include "OutputControl.h"
+#include <math.h>
 
-
-class ScoreQZ : public Score{
+class JointProbability {
 public:
-    ScoreQZ();
-    virtual ~ScoreQZ();
-    virtual vector <int> getIndices (int N, int p, double * data);
-    virtual vector <int> setIndices (int N, int p, double * data, bool index);
-    void setSigma(int N, int p);
-    double calculateScorePartition(double r[], int p);
-    double calculateScore(double r[], int N);
-    void getValues();   
+    JointProbability(vector <Variable> variables, int nSamples, int pdfSize);
+    virtual ~JointProbability();    
+        
+    OutputControl out;
+    void calculate();
+//    vector <vector <double > > getRange();
+    vector <double> getRange();
+    vector <double> getJP();
 private:
-    vector <double> sigma;
-    vector <double> mu;
+    vector <Variable> variables;
+    double * jointPDF;
+    int nSamples;
+    int gridSize;
+    int pdfSize;
+    int nVariables;
+    int matrixSize;
+    vector < vector < int > > grids;        
+    
+    vector <double> gridPointsCourse;
+    vector <double> gridPointsFine;
+        
+    vector <int> rowsIntersect(vector <int> v1, vector <int> v2);
     
 };
 
-#endif	/* SCORE_HPP */
+#endif /* JOINTPROBABILITY_H */
 

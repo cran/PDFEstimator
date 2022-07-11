@@ -11,6 +11,8 @@
 \tabular{ll}{
 Main function for estimating the density from a data sample:  \tab \code{\link{estimatePDF}}\cr\cr 
 Customized plotting function for visual inspection and analysis:  \tab \code{\link{plot}}\cr\cr
+Plotting function for densities with 2 variables:  \tab \code{\link{plot2d}}\cr\cr
+Plotting function for densities with 3 variables:  \tab \code{\link{plot3d}}\cr\cr
 Conversion utility for estimates obtained by other methods:  \tab \code{\link{convertToPDFe}}\cr\cr
 Calculation of boundaries for user-defined confidence levels:  \tab \code{\link{getTarget}}\cr\cr
 Optional background shading outlining expected variance by position:  \tab \code{\link{plotBeta}}\cr\cr

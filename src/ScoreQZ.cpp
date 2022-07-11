@@ -15,11 +15,8 @@
 #include "ScoreQZ.h"
 
 
-ScoreQZ::ScoreQZ(double confidenceTarget, double confidenceMin, double confidenceMax) {
+ScoreQZ::ScoreQZ() {
     getValues();
-    targetScore = getTargetScore(confidenceTarget);
-    minimumScore = getTargetScore(confidenceMin);
-    maximumScore = getTargetScore(confidenceMax);
 }
 
 
