@@ -18,9 +18,11 @@
 
 
 OutputControl::OutputControl() {
+    debug = false;
 }
 
 OutputControl::OutputControl(const OutputControl& orig) {
+    debug = false;
 }
 
 OutputControl::~OutputControl() {

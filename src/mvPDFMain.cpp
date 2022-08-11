@@ -1,5 +1,6 @@
 
 #include <vector>
+#include "callPDF.h"
 #include "Variable.h"
 #include "JointProbability.h"
 
@@ -15,7 +16,8 @@ extern "C" {
         vector <Variable> variables;
         variables.reserve(nVariables);
         InputParameters input;
-            
+        input.out.debug = debug[0];    
+        
         int iVariable = 0;
         vector <double> samples;
         samples.reserve(nSamples);
@@ -26,6 +28,7 @@ extern "C" {
                 ostringstream vString; 
                 vString << iVariable++; 
                 Variable variable = Variable(input, samples, vString.str(), false);
+                variable.out.debug = debug[0];
                 variables.push_back(variable);
                 samples.clear();
                 vSample = 0;

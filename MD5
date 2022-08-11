@@ -1,4 +1,4 @@
-f803015eb0d2b68b5b23fc07deae7d78 *DESCRIPTION
+744d8d3976df133efdb35f0a8f0c7505 *DESCRIPTION
 930a59a09df088b2fffb1b869196b47f *NAMESPACE
 b920431a94511690bee6e32e3f84af6b *R/approximatePoints.R
 11cac40161cc36dede4317ce0d43058c *R/convertToPDFe.R
@@ -12,7 +12,7 @@ dc6673b9d3bd2fe8b61cbea6024bfa8f *R/lines.R
 a2204a8d8923e65f3e6639189f01abf5 *R/plotBeta.R
 cb7678d645be43895c0c39a852eb4c07 *R/print.R
 14d1f5b2a9c9c4f0d2e6ee204d972acb *R/summary.R
-862cbb29dccc440789de38e0bf7cf487 *build/partial.rdb
+ad758876f35675158443e2c5ac9d6d9d *build/partial.rdb
 e25a742504944db68309801a3145006b *inst/CITATION
 5cb90941215043690d59dc0b057e9aa0 *man/PDFEstimator-package.Rd
 7f95268fb80b1fcf789372c31a87e0d6 *man/approximatePoints.Rd
@@ -35,8 +35,9 @@ ebf5807ff765cb7312579faf0a9cd05b *src/InputParameters.h
 637a1dffbb37b9288d696b321c9db228 *src/JointProbability.h
 7a35620078a383d58aaa5059299d91f2 *src/MinimizeScore.cpp
 5bb6b581cd363163f94a5ccba8d46d0d *src/MinimizeScore.h
-d783a0546555c417d330cd5800b2eba1 *src/OutputControl.cpp
+3a3f72ed68b821b37c87faecc4b85e44 *src/OutputControl.cpp
 e5e4eedcec72fafd4a4c5c40e450a3bc *src/OutputControl.h
+63a2c3b1f04f7301a281a43aea45d5a0 *src/PDFEstimator_init.c
 0af01e7444dbb9b252996146dc4cc2cb *src/PDFMain.cpp
 b9cce271770af4c9c2e77bdf4067fc3b *src/Score.cpp
 3f251336842469d6647e6dc1247758e2 *src/Score.h
@@ -48,4 +49,4 @@ ed6d9803f3145d2b702d595c96dd1728 *src/ScoreQZ.h
 69c6b37774a8253c65895e36b416f478 *src/WriteResults.h
 210be66bd80139a16013797f2359a2ba *src/callPDF.cpp
 fc5b88c4cf28d8863e93cb3304c1f83d *src/callPDF.h
-aa891b7daafc6596ec9e35db1ce44aef *src/mvPDFMain.cpp
+80b0678038c69dcb12c7d8c7321ee03b *src/mvPDFMain.cpp
