@@ -81,56 +81,56 @@ bool InputParameters::userInput(int argc, char**  argv){
             if (debugOpt == "on") {
                 debug = true;
                 out.debug = true;
-                out.print("debug:  on");
+                out.print("debug = on");
             }
             break;
         case 'f':
             inputFile = optarg;
-            out.print("Input data file name:  " + inputFile);
+            out.print("Input data file name = " + inputFile);
             inputEntered = true;
             break; 
         case 'o':
             outputFile = optarg;
-            out.print("Output data file name:  " + outputFile);
+            out.print("Output data file name = " + outputFile);
             break; 
         case 'a':
             inputPath = optarg;
-            out.print("Input data path:  " + inputPath);
+            out.print("Input data path = " + inputPath);
             break; 
         case 'b':
             outputPath = optarg;
-            out.print("Output data path:  " + outputPath);
+            out.print("Output data path = " + outputPath);
             break; 
         case 'w':
             writeOpt = optarg;
             if (writeOpt == "off") {
                 writeFile = false;
-                out.print("Write File:  off");
+                out.print("Write File = off");
             }
             break;
         case 'x':
             writeOpt = optarg;
             if (writeOpt == "off") {
                 writeFailed = false;
-                out.print("Write Failed Solutions:  off");
+                out.print("Write Failed Solutions = off");
             }
             break;        
         case 'h':
             headerOpt = optarg;
             if (headerOpt == "off") {
                 writeHeader = false;
-                out.print("Write File Header:  off");
+                out.print("Write File Header = off");
             }
             break;
         case 'q':
             qqFile = optarg;
             writeQQ = true;
-            out.print("Write QQ File:  " + qqFile);
+            out.print("Write QQ File = " + qqFile);
             break;
         case 'r':
             sqrFile = optarg;
             writeSQR = true;
-            out.print("Write SQR File:  " + sqrFile);
+            out.print("Write SQR File = " + sqrFile);
             break;
         case 'l': 
             lowerBound = atof(optarg);
@@ -144,7 +144,7 @@ bool InputParameters::userInput(int argc, char**  argv){
             break;  
         case 'v':
             scoreType = optarg;
-            out.print("Scoring method:  " + scoreType);
+            out.print("Scoring method = " + scoreType);
             break;       
         case 's':                                                               
             SURDTarget = atof(optarg);
@@ -184,7 +184,7 @@ bool InputParameters::userInput(int argc, char**  argv){
             break;
         case 'p':                                                               
             integrationPoints = atoi(optarg);
-            out.print("integration points = " + integrationPoints);
+            out.print("integration points = ", integrationPoints);
             break;
         case 'n':                                                               
             maxLagrange = atoi(optarg);

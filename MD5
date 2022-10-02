@@ -1,4 +1,4 @@
-744d8d3976df133efdb35f0a8f0c7505 *DESCRIPTION
+c8b42418aa5fdbfb62a181f56d74407a *DESCRIPTION
 930a59a09df088b2fffb1b869196b47f *NAMESPACE
 b920431a94511690bee6e32e3f84af6b *R/approximatePoints.R
 11cac40161cc36dede4317ce0d43058c *R/convertToPDFe.R
@@ -12,7 +12,7 @@ dc6673b9d3bd2fe8b61cbea6024bfa8f *R/lines.R
 a2204a8d8923e65f3e6639189f01abf5 *R/plotBeta.R
 cb7678d645be43895c0c39a852eb4c07 *R/print.R
 14d1f5b2a9c9c4f0d2e6ee204d972acb *R/summary.R
-ad758876f35675158443e2c5ac9d6d9d *build/partial.rdb
+c0ad415b645da5bad54ae24b19480f4b *build/partial.rdb
 e25a742504944db68309801a3145006b *inst/CITATION
 5cb90941215043690d59dc0b057e9aa0 *man/PDFEstimator-package.Rd
 7f95268fb80b1fcf789372c31a87e0d6 *man/approximatePoints.Rd
@@ -25,11 +25,11 @@ e25a742504944db68309801a3145006b *inst/CITATION
 c8a63b4fc1905d46c491c725d49e4449 *man/plot2d.Rd
 3125bfbf8e6c78ae8361ace31fdf88c5 *man/plot3d.Rd
 f6e365a91bd89e6d2c60f9eac91a0e6b *man/plotBeta.Rd
-96dad6a6f61bfc5cee6209d39763b8c5 *src/ChebyShev.cpp
-632ba4f94d2b2c3d5eb3b219a5a8563a *src/ChebyShev.h
-97f71654a181019e99a437bba35f09b1 *src/InputData.cpp
+3b14f15ab8c8c01159c447a1b90d2386 *src/ChebyShev.cpp
+c04d5674329bbbba1e7f4b0836973fac *src/ChebyShev.h
+a9e07beb2b90cc76172fa7c6cd680c6b *src/InputData.cpp
 a1c27aa8c1e6e97ef4c441707ca092ba *src/InputData.h
-3096548bd6cd0b727d4b44d36cd6a6e6 *src/InputParameters.cpp
+8fe7b3700f8920d4e31f1b073ce35af4 *src/InputParameters.cpp
 ebf5807ff765cb7312579faf0a9cd05b *src/InputParameters.h
 0dace8858756feeccaa9dd2a276e8bdd *src/JointProbability.cpp
 637a1dffbb37b9288d696b321c9db228 *src/JointProbability.h

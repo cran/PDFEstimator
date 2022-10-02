@@ -59,13 +59,11 @@ bool InputData::readData() {
         return false;
     }
 	    
-    int temp = 0;
     while (getline(fin, line)) {
         double test = atof(line.c_str());
         if (test == 0) {
             test = 0;
         }
-        temp++;
         rawData.push_back(test);
     }
     if (rawData.size() == 0) {
