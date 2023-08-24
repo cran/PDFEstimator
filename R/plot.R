@@ -6,6 +6,8 @@ plot.PDFe <- function(x, plotPDF = TRUE, plotSQR = FALSE,
                       legendcex = 0.9, ...){
   
   
+  oldpar <- par(no.readonly = TRUE)
+  on.exit(par(oldpar))
   
   if (!is.numeric(lwd)) {
     stop("plot line width must be numeric")

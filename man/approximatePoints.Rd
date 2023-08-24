@@ -11,7 +11,7 @@
 \details{
 This method approximates density estimates for the points specified by performing a linear interpolation on an existing probability density function. For a more precise point estimation, call estimatePDF with the estimationPoints argument.
 }
-
+\value{No return value, called for side effects}
 \references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.}
 \author{Jenny Farmer, Donald Jacobs}
 \examples{

@@ -16,7 +16,7 @@
 #define	INPUTDATA_HPP
 
 #include <string>
-#include <fstream>
+//#include <fstream>  7/9/2023  now included in OutputControl.h, only for command line
 #include <vector>
 #include <stdlib.h>
 #include <algorithm>

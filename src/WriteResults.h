@@ -15,9 +15,9 @@
 #ifndef WRITERESULTS_HPP
 #define	WRITERESULTS_HPP
 
-#include <iostream>
+//#include <iostream>
 #include <math.h>
-#include <fstream>
+//#include <fstream>
 #include <string>
 #include <sstream>
 #include <iomanip>      

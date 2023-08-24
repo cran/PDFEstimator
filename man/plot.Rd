@@ -26,6 +26,7 @@
 	\item{legendcex}{expansion factor for legend point size with sqr plot type, for plotPDF = FALSE and plotSQR = TRUE}
 	\item{...}{further plotting parameters}
 }
+\value{No return value, called for side effects}
 \references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.}
 \author{Jenny Farmer, Donald Jacobs}
 \examples{

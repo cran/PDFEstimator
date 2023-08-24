@@ -36,12 +36,8 @@ void Variable::calculateMarginals(vector <double> gridPointsCourse, vector <doub
     minimumPDF.out.debug = input.debug;
     minimumPDF.minimize(input, data); 
     WriteResults write;
-    if (writeMarginal) {
-        string file = "MarginalPDF_" + name;
-        write.writeSolution(input, data, minimumPDF, file);   
-    } else {
-        write.createSolution(input, data, minimumPDF);
-    }
+    write.createSolution(input, data, minimumPDF);
+    
         
     vector <double> samplePoints = interpolateGrid(write.CDF, write.x, gridPointsCourse);
     input.estimatePoints = true;

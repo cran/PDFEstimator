@@ -21,10 +21,12 @@ WriteResults::WriteResults() {
 WriteResults::~WriteResults() {
 }
 
+#ifdef outputCommandLine
 void WriteResults::writeSolution(const InputParameters& input, const InputData& data, MinimizeScore& solution, 
                                  string fileNameAdd) {
     writeSolution(input, data, solution, ScoreQZ(), 0, fileNameAdd);
 }
+
 
 void WriteResults::writeSolution(const InputParameters& input, const InputData& data, MinimizeScore& solution, 
                                  Score score, bool failed, string fileNameAdd) {
@@ -144,7 +146,7 @@ void WriteResults::writeSolution(const InputParameters& input, const InputData& 
     }
     
 }
-
+#endif
 
 void WriteResults::createSolution(const InputParameters& input, const InputData& data, MinimizeScore& solution) {
        
@@ -264,7 +266,7 @@ void WriteResults::createSolution(const InputParameters& input, const InputData&
 }
 
 
-
+#ifdef outputCommandLine
 void WriteResults::writeColumn(string filename, vector <double> r, int length) {   
     ofstream outFile;
     outFile.open(filename.c_str());
@@ -320,6 +322,7 @@ void WriteResults::writeQQ(string filename, double r[], int length, bool sqr) {
     }    
     outFile.close();
 }
+#endif
 
 void WriteResults::createQQ(double r[], int length) {
    

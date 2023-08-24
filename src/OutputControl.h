@@ -33,6 +33,7 @@
 
 #ifdef outputCommandLine
 #include <iostream>
+#include <fstream>
 #endif
 
 using namespace std;

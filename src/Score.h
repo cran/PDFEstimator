@@ -15,9 +15,9 @@
 #ifndef SCORE_HPP
 #define	SCORE_HPP
 
-#include <fstream>
+//#include <fstream>
 #include <vector>
-#include <iostream>
+//#include <iostream>
 #include <math.h>
 #include <algorithm>
 

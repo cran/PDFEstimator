@@ -9,6 +9,7 @@
 	\item{ylab}{y-axis label for pdf}
 	\item{zlab}{z-axis label for pdf}
 }
+\value{No return value, called for side effects}
 \references{Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.}
 \author{Jenny Farmer, Donald Jacobs}
 \examples{

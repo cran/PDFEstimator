@@ -48,6 +48,7 @@ InputData::~InputData() {
     delete [] dzWeight3;
 }
 
+#ifdef outputCommandLine
 bool InputData::readData() {
     
     ifstream fin;
@@ -75,7 +76,8 @@ bool InputData::readData() {
     sort(rawData.begin(), rawData.end());
     return processData();
 }
-    
+#endif    
+
 void InputData::setData(vector<double> & data) {       
     rawData.clear();
     rawData.reserve(data.size());

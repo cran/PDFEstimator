@@ -1,8 +1,8 @@
 citHeader("To cite PDFEstimator in publications use:")
 
-citEntry(entry = "Article",
+bibentry(bibtype = "Article",
   title        = "High throughput nonparametric probability density estimation",
-  author       = personList(as.person("Jenny Farmer"),
+  author       = c(as.person("Jenny Farmer"),
                    as.person("Donald Jacobs")),
   journal      = "PLoS One",
   year         = "2018",

@@ -324,7 +324,7 @@ bool MinimizeScore::minimize(const InputParameters& input, const InputData& data
     
     bestThreshold = score.getConfidence(globalScore);    
     
-    if (!solutionNotFound) {
+/*    if (!solutionNotFound) {
         if (input.writeQQ) {
             WriteResults write;
             string filename;
@@ -338,7 +338,7 @@ bool MinimizeScore::minimize(const InputParameters& input, const InputData& data
             write.writeQQ(filename, bestRandom, N, true);
         }
     }
-        
+*/        
     delete [] trialLagrange;
     delete [] cdf;    
 

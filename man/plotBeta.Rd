@@ -11,6 +11,7 @@
 }
 \details{plotBeta is intended for use with the plot method in the PDFEstimator package for plotting pdfe density estimation objects.
 }
+\value{No return value, called for side effects}
 \references{
 Farmer, J. and D. Jacobs (2018). "High throughput nonparametric probability density estimation." PLoS One 13(5): e0196937.
 }
